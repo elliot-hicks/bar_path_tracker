@@ -1,0 +1,14 @@
+
+# Image/ Video files:
+
+*.png
+*.jpg
+*.mp4
+*.pdf
+
+
+# Data files:
+
+*.csv
+*.npy
+*.pkl
