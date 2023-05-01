@@ -1,0 +1,41 @@
+#: import utils kivy.utils
+
+<StartScreenGridLayout>
+
+    name1:name1
+    name2:name2
+    name3:name3
+
+    GridLayout:
+        cols: 1
+        size: root.width, root.height
+        
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "Name1"
+            TextInput:
+                id:name1
+                multiline: False
+
+            Label:
+                text: "Name2"
+            TextInput:
+                id:name2
+                multiline: False
+
+            Label:
+                text: "Name3"
+            TextInput:
+                id:name3
+                multiline: False
+    
+        Button:
+            text: "Submit"
+            font_size: 34
+            on_press: root.press()
+            background_normal: ''
+            background_color: 
+                utils.get_color_from_hex('#AD2A2A')
+

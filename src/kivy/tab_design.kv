@@ -1,0 +1,41 @@
+#: import utils kivy.utils
+#: import Tester test
+
+<TabBarPath>
+    do_default_tab: False
+    size_hint: 1, 1
+    
+    tab_pos: 'bottom_mid'
+    tab_width: self.width / 4
+
+    TabbedPanelItem:
+        text: "Home"
+        background_normal: ''
+        background_color: utils.get_color_from_hex('#AD2A2A')
+        Image:
+            source: "images/bar_path_tiled.jpg"
+
+    TabbedPanelItem:
+        text: "Track"
+        background_normal: ''
+        background_color: utils.get_color_from_hex('#AD2A2A')
+        Label: 
+            text: "Track Lift"
+            font_size: 30
+    
+    TabbedPanelItem:
+        text: "Log"
+        background_normal: ''
+        background_color: utils.get_color_from_hex('#AD2A2A')
+        Label: 
+            text: "Lift History"
+            font_size: 30
+    
+    TabbedPanelItem:
+        text: "Settings"
+        background_normal: ''
+        background_color: utils.get_color_from_hex('#AD2A2A')
+        border_color: (1,1,1,1)
+        Label: 
+            text: "Settings"
+            font_size: 30
