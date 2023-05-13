@@ -10,6 +10,9 @@ class SelectWeightTab(TabbedPanelItem):
     def __init__(self, **kwargs):
         super(SelectWeightTab, self).__init__(**kwargs)
         self.text = "Add Video"
+        self.background_normal = ""
+        self.background_color = (0, 0, 0, 1)
+        self.border = (0, 0, 0, 0)
 
         weight_highlighter = HighlightWeight()
 

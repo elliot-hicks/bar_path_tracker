@@ -8,10 +8,10 @@ class VideoFrameScreen(Screen):
         self.frame_path = frame_path
 
         print(self.frame_path)
-        i = Image(
+        self.i = Image(
             source=self.frame_path,
             allow_stretch=True,
-            size_hint=(1, 1),
+            # size_hint=(1, 1),
         )
 
-        self.add_widget(i)
+        self.add_widget(self.i)

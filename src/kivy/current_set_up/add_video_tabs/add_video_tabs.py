@@ -11,6 +11,5 @@ class AddVideoTabs(TabbedPanel):
         self.tab_pos = "left_mid"
         self.tab_width = self.size[0]
         self.do_default_tab = False
-
         self.add_widget(SelectWeightTab())
         self.add_widget(SelectVideoTab())

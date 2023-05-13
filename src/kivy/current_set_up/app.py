@@ -1,38 +1,32 @@
 from kivy.core.window import Window
-
-Window.clearcolor = (1, 1, 1, 1)
-Window.size = (500, 500)
-
-
 from kivy.uix.floatlayout import FloatLayout
 from kivy.app import App
 
 
-from top_tabs.app_tabs import Tabs
-from add_video_tabs.select_weight_tab import SelectWeightTab
-from top_tabs.home_tab import HomeTab
-from top_tabs.settings_tab import SettingsTab
-from top_tabs.lift_logs_tab import LiftLogsTab
-
-from add_video_tabs.add_video_tabs import AddVideoTabs
+from screens.main_screen import MainScreen
+from screens.loading_screen import LoadingScreen
+from kivy.uix.screenmanager import ScreenManager
+from kivy.clock import Clock
 
 
 class TestApp(App):
     def build(self):
-        add_video_tabs = Tabs()
+        Window.clearcolor = (0, 0, 0, 1)
 
-        weight_select_tab = SelectWeightTab()
+        self.manager = ScreenManager()
 
-        new_video_tabs = AddVideoTabs()
+        loading_screen = LoadingScreen()
+        main_screen = MainScreen()
 
-        weight_select_tab.add_widget(new_video_tabs)
+        self.manager.add_widget(loading_screen)
+        self.manager.add_widget(main_screen)
 
-        add_video_tabs.add_widget(HomeTab())
-        add_video_tabs.add_widget(weight_select_tab)
-        add_video_tabs.add_widget(LiftLogsTab())
-        add_video_tabs.add_widget(SettingsTab())
+        Clock.schedule_once(self.loading_screen_callback, 3)
 
-        return add_video_tabs
+        return self.manager
+
+    def loading_screen_callback(self, dt):
+        self.manager.current = "main_screen"
 
 
 TestApp().run()

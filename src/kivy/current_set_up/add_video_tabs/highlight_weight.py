@@ -2,6 +2,8 @@ from kivy.core.window import Window
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.graphics import Color, Rectangle
 
+import matplotlib.pyplot as plt
+
 
 class HighlightWeight(ScatterLayout):
     def __init__(self, **kwargs):
@@ -13,7 +15,7 @@ class HighlightWeight(ScatterLayout):
         self.width = 0
         self.height = 0
         with self.canvas.before:
-            Color(0, 0, 1, 0.1)
+            Color(0, 0, 1, 0.4)
             self.r = Rectangle(pos=(0, 0), size_hint=(1, 1))
 
     def on_touch_down(self, touch):
@@ -40,3 +42,19 @@ class HighlightWeight(ScatterLayout):
             abs(self.height),
         ]
         self.r.pos = [self.start_pos[0], y]
+
+    def on_touch_up(self, touch):
+        x, y = touch.pos
+        print(x, y)
+
+        i = plt.imread(
+            r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\src\kivy\current_set_up\images\bar_path_black_png.png"
+        )
+
+        max_x = self.parent.size[0]
+        max_y = self.parent.size[1]
+
+        print(x, max_x)
+        print(max_y - y, max_y)
+
+        print(i.shape)

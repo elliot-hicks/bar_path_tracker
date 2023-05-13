@@ -8,3 +8,7 @@ class Tabs(TabbedPanel):
         self.tab_pos = "bottom_mid"
         self.tab_width = Window.size[0] / 4
         self.do_default_tab = False
+        self.background_color = (1, 1, 1, 1)
+        self.border = (0, 0, 0, 0)
+        # dummy, required but not used:
+        self.background_image = "images/bar_path.png"

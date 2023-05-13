@@ -1,15 +1,14 @@
-from kivy.uix.tabbedpanel import TabbedPanelItem
+from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.image import Image
 from kivy.uix.anchorlayout import AnchorLayout
+from kivy.app import App
 
 
-class HomeTab(TabbedPanelItem):
+class LoadingScreen(Screen):
     def __init__(self, **kwargs):
-        super(HomeTab, self).__init__(**kwargs)
-        self.text = "Home"
-        self.background_normal = ""
-        self.background_color = (0, 0, 0, 1)
-        self.border = (0, 0, 0, 0)
+        super(LoadingScreen, self).__init__(**kwargs)
+
+        self.name = "loading_screen"
 
         anchor = AnchorLayout(anchor_x="center", anchor_y="center")
         anchor.add_widget(
