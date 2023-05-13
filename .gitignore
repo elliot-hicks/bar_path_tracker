@@ -67,3 +67,4 @@ docs/_build/
 
 *.cpython-310.pyc
 *.pyo
+*.pyc
