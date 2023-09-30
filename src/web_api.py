@@ -4,27 +4,22 @@ import numpy as np
 import gradio as gr
 from PIL import Image
 
-"""
-import sys
-
-sys.path.insert(0, "..")
-sys.path.insert(0, "../../..")
-
-from object_tracker.object_tracker import ObjectTracker
+from bar_path_tracker.object_tracker import ObjectTracker
 
 plate_size = 0.43
 
 
 def track(video):
+    """
     f = cv2.VideoCapture(video)
 
     _, frame = f.read()
 
     t = ObjectTracker()
 
-    starting_bbox = None
-    starting_bbox_centre = None
-    meters_per_pixel = None
+    starting_bbox = [100, 200, 300, 400]
+    starting_bbox_centre = [250, 250]
+    meters_per_pixel = 0.4
 
     bar_path, video = t.track_bar_path(
         video,
@@ -34,9 +29,13 @@ def track(video):
         False,
     )
 
-    return video
+    print(video)
+    """
 
-"""
+    path = r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\src\data\results\CSRT_with_stats.mp4"
+
+    return path
+
 
 # points color and marker
 colors = [(255, 0, 0), (0, 255, 0)]
@@ -47,15 +46,14 @@ markers = [1, 5]
 # the second is id (used for original_image State),
 # the third is an empty list (used for selected_points State)
 image_examples = [
-    [r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\images\Bar.png"],
     [
-        r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\images\bar_path_tiled.jpg"
+        r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\images\bar_path_logo.png"
     ],
 ]
 # video examples
 video_examples = [
     [
-        r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\data\example_videos\bench_example.mp4"
+        r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\src\data\example_videos\bench_example.mp4"
     ]
 ]
 
@@ -122,16 +120,16 @@ def undo_points(orig_img, sel_pix, first_frame):
 
 
 def video_selected(video_input, first_frame):
-    f = first_frame.squeeze()
+    f = first_frame  # np.array(first_frame).squeeze()
     f = cv2.cvtColor(f, cv2.COLOR_BGR2RGB)
 
     return gr.update(visible=True, value=f), gr.update(
-        value=video_input, visible=True, scale=1
-    )  # "tmp.jpg"
+        value=track(video_input), visible=True, scale=1
+    )
 
 
 def hide_image():
-    pass
+    return gr.update(visible=False)
 
 
 with gr.Blocks() as demo:
