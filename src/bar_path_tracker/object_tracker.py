@@ -11,7 +11,7 @@ from scipy.signal import savgol_filter
 class ObjectTracker:
     def __init__(self) -> None:
         self.repo_path = r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker"
-        self.video_path = r"data\example_videos\bench_example.mp4"
+        self.video_path = r"src\data\example_videos\bench_example.mp4"
 
         self.tracker = cv2.TrackerCSRT_create()
         self.tracker_type = "CSRT"
@@ -93,7 +93,7 @@ class ObjectTracker:
         frame = cv2.resize(frame, [frame_width // 2, frame_height // 2])
         mask = np.zeros_like(frame)
 
-        output_path = f"{self.tracker_type}.mp4"
+        output_path = f"data/results/{self.tracker_type}.mp4"
 
         # Initialize video writer to save the results
         output = cv2.VideoWriter(
@@ -373,7 +373,7 @@ class ObjectTracker:
 
         # Initialize video writer to save the results
         output = cv2.VideoWriter(
-            f"{self.tracker_type}_with_stats.mp4",
+            f"data/results/{self.tracker_type}_with_stats.mp4",
             cv2.VideoWriter_fourcc(*"XVID"),
             60.0,
             (self.frame_width // 2, self.frame_height // 2),
