@@ -93,9 +93,11 @@ class ObjectTracker:
         frame = cv2.resize(frame, [frame_width // 2, frame_height // 2])
         mask = np.zeros_like(frame)
 
+        output_path = f"{self.tracker_type}.mp4"
+
         # Initialize video writer to save the results
         output = cv2.VideoWriter(
-            f"{self.tracker_type}.mp4",
+            output_path,
             cv2.VideoWriter_fourcc(*"XVID"),
             60.0,
             (frame_width // 2, frame_height // 2),
@@ -194,7 +196,7 @@ class ObjectTracker:
         output.release()
         cv2.destroyAllWindows()
 
-        return bar_path
+        return bar_path, output_path
 
     def differentiate(
         self, quantity, time, smooth_quanity=False, smoothing_poly_order=5

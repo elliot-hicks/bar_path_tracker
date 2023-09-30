@@ -52,20 +52,6 @@ image_examples = [
         r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\images\bar_path_tiled.jpg"
     ],
 ]
-# video examples
-video_examples = [
-    [
-        r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\data\example_videos\bench_example.mp4"
-    ]
-]
-
-
-def store_video(video):
-    f = cv2.VideoCapture(video)
-    _, frame = f.read()
-    f.release()
-
-    return video, frame
 
 
 # once user upload an image, the original image is stored in `original_image`
@@ -101,9 +87,8 @@ def get_point(img, sel_pix, evt: gr.SelectData):
 
 
 # undo the selected point
-def undo_points(orig_img, sel_pix, first_frame):
-    temp = first_frame.squeeze()
-    temp = cv2.cvtColor(temp, cv2.COLOR_BGR2RGB)
+def undo_points(orig_img, sel_pix):
+    temp = orig_img
 
     # draw points
     if len(sel_pix) != 0:
@@ -121,53 +106,30 @@ def undo_points(orig_img, sel_pix, first_frame):
     return temp if isinstance(temp, np.ndarray) else np.array(temp)
 
 
-def video_selected(video_input, first_frame):
-    f = first_frame.squeeze()
-    f = cv2.cvtColor(f, cv2.COLOR_BGR2RGB)
-
-    return gr.update(visible=True, value=f), gr.update(
-        value=video_input, visible=True, scale=1
-    )  # "tmp.jpg"
-
-
-def hide_image():
-    pass
+def show_points(selected_points):
+    return gr.update(visible=True)
 
 
 with gr.Blocks() as demo:
-    with gr.Tab(
-        "Upload",
-    ):
-        with gr.Row():
-            original_video = gr.State(value=None)  # store original video
-            first_frame = gr.State(value=None)  # store original video
-            input_video = gr.Video(label="Video", size=(100, 200))
+    with gr.Row():
+        with gr.Column():
+            # input image
+            original_image = gr.State(
+                value=None
+            )  # store original image without points, default None
 
-            with gr.Column():
-                # input image
-                original_image = gr.State(
-                    value=None
-                )  # store original image without points, default None
+            input_image = gr.Image(type="numpy")
 
-                input_image = gr.Image(
-                    type="numpy", value=image_examples[0][0], visible=False, scale=1
-                )
+            selected_points = gr.State([])  # store points
+            bbox_hint = gr.Markdown(
+                "You can click on the image to select points prompt. Default: foreground_point."
+            )
+            undo_button = gr.Button("Undo point")
+            submit_button = gr.Button("Submit")
 
-                selected_points = gr.State([])  # store points
-                bbox_hint = gr.Markdown(
-                    "You can click on the image to select points prompt. Default: foreground_point."
-                )
-                undo_button = gr.Button("Undo point")
-                submit_button = gr.Button("Submit")
+        dataframe = gr.DataFrame(value=None, headers=["x", "y"])
 
-            output_video = gr.Video(label="Bar Path", visible=False)
-
-    input_video.upload(store_video, [input_video], [original_video, first_frame])
-    input_video.change(
-        fn=video_selected,
-        inputs=[input_video, first_frame],
-        outputs=[input_image, output_video],
-    )
+    input_image.upload(store_img, [input_image], [original_image, selected_points])
 
     input_image.select(
         get_point,
@@ -175,13 +137,7 @@ with gr.Blocks() as demo:
         [input_image],
     )
 
-    undo_button.click(
-        undo_points, [original_image, selected_points, first_frame], [input_image]
-    )
-    submit_button.click(
-        hide_image,
-        inputs=None,
-        outputs=None,
-    )
+    undo_button.click(undo_points, [original_image, selected_points], [input_image])
+    submit_button.click(show_points, selected_points, dataframe)
 
-demo.queue().launch(debug=True, enable_queue=True, height=1000)
+demo.queue().launch()
