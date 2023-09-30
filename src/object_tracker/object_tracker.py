@@ -140,6 +140,7 @@ class ObjectTracker:
                     ],
                     "centre_in_pixels": [centre_x, centre_y],
                     "bounding-box": list(bbox),
+                    "centre_global_in_pixels": centre,
                 }
 
             else:
@@ -264,7 +265,7 @@ class ObjectTracker:
 
         return stats
 
-    def get_turning_points(times, displacements, verbose=False):
+    def get_turning_points(self, times, displacements, verbose=False):
         norm_v_displacements = (displacements - displacements.min()) / (
             displacements.max() - displacements.min()
         )
@@ -360,7 +361,7 @@ class ObjectTracker:
 
         # load video:
         cv2.destroyAllWindows()
-        video = cv2.VideoCapture(os.path.join(repo_path, video_path))
+        video = cv2.VideoCapture(os.path.join(self.repo_path, video_path))
         time = video.get(cv2.CAP_PROP_FPS) / 1000
         ret, frame = video.read()
         if not ret:
@@ -399,7 +400,7 @@ class ObjectTracker:
             fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
 
             if time in list(bar_path.keys()):
-                centre = bar_path[round(time, 3)]["centre_in_pixels"]
+                centre = bar_path[round(time, 3)]["centre_global_in_pixels"]
                 if previous_centre is not None:
                     mask = cv2.line(mask, previous_centre, centre, line_colour, 2)
                 previous_centre = centre
@@ -408,31 +409,30 @@ class ObjectTracker:
                 cv2.putText(
                     frame,
                     "Speed: " + str(round(speed, 1)) + "m/s",
-                    (0, 100),
+                    (0, 60),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.75,
                     (255, 255, 255),
-                    2,
+                    1,
                 )
                 cv2.putText(
                     frame,
                     "Acceleration: " + str(round(acceleration, 1)) + "m/s^2",
-                    (0, 120),
+                    (0, 80),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.75,
                     (255, 255, 255),
-                    2,
+                    1,
                 )
                 cv2.putText(
                     frame,
                     "Rep Number: " + str(int(rep_number)),
-                    (0, 140),
+                    (0, 100),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.75,
                     (255, 255, 255),
-                    2,
+                    1,
                 )
-
             # Show stats:
             cv2.putText(
                 frame,
@@ -441,27 +441,17 @@ class ObjectTracker:
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.75,
                 (255, 255, 255),
-                2,
-            )
-            cv2.putText(
-                frame,
-                "FPS: " + str(int(fps)),
-                (0, 50),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.75,
-                (255, 255, 255),
-                2,
+                1,
             )
             cv2.putText(
                 frame,
                 "Time: " + str(round(time, 1)) + "s",
-                (0, 80),
+                (0, 40),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.75,
                 (255, 255, 255),
-                2,
+                1,
             )
-
             full_frame = cv2.add(frame, mask)
             cv2.imshow("Tracking", full_frame)
             output.write(full_frame)
@@ -472,3 +462,15 @@ class ObjectTracker:
         video.release()
         output.release()
         cv2.destroyAllWindows()
+
+    def get_set_summary(self, bar_path, weight):
+        stats = self.get_stats(bar_path, weight, True)
+        times = np.array(list(stats.keys()))
+
+        y_displacements = np.array([entry["y_distance"] for entry in stats.values()])
+
+        turning_points = self.get_turning_points(times, y_displacements, False)
+        turning_point_times = np.array(list(turning_points.keys()))
+        reps = self.get_reps(turning_point_times, times)
+
+        return stats, reps
