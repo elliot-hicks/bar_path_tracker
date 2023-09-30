@@ -13,7 +13,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/elliot-hicks/bar_path_tracker">
-    <img src="images/bar_path_logo.png" alt="Logo" width="80" height="80">
+    <img src="https://github.com/elliot-hicks/bar_path_tracker/blob/main/images/bar_path_logo.svg" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Best-README-Template</h3>
