@@ -21,12 +21,9 @@ with gr.Blocks() as demo:
                 value=None
             )  # store original image without points, default None
 
+            # basic blocks:
             input_image = gr.Image(type="numpy")
-
             selected_points = gr.State([])  # store points
-            bbox_hint = gr.Markdown(
-                "You can click on the image to select points prompt. Default: foreground_point."
-            )
             undo_button = gr.Button("Undo point")
             submit_button = gr.Button("Submit")
 
