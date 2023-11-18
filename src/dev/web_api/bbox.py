@@ -70,8 +70,8 @@ def get_point(img, sel_pix, evt: gr.SelectData):
                 img,
                 point,
                 colors[1],
-                markerType=markers[1],
-                markerSize=20,
+                markerType=markers[0],
+                markerSize=0,
                 thickness=5,
             )
 
@@ -88,7 +88,9 @@ def get_point(img, sel_pix, evt: gr.SelectData):
 
 # undo the selected point
 def undo_points(orig_img, sel_pix):
-    temp = orig_img
+    temp = orig_img.copy()
+
+    print(temp.shape)
 
     # draw points
     if len(sel_pix) != 0:
@@ -98,16 +100,16 @@ def undo_points(orig_img, sel_pix):
                 temp,
                 point,
                 colors[1],
-                markerType=markers[1],
-                markerSize=20,
+                markerType=markers[0],
+                markerSize=00,
                 thickness=5,
             )
 
-    return temp if isinstance(temp, np.ndarray) else np.array(temp)
+    return temp if isinstance(temp, np.ndarray) else np.array(temp), sel_pix
 
 
 def show_points(selected_points):
-    return gr.update(visible=True)
+    return gr.update(value=selected_points)
 
 
 with gr.Blocks() as demo:
@@ -127,7 +129,11 @@ with gr.Blocks() as demo:
             undo_button = gr.Button("Undo point")
             submit_button = gr.Button("Submit")
 
-        dataframe = gr.DataFrame(value=None, headers=["x", "y"])
+        dataframe = gr.DataFrame(
+            headers=["x", "y"],
+            col_count=(2, "fixed"),
+            datatype=["number", "number"],
+        )
 
     input_image.upload(store_img, [input_image], [original_image, selected_points])
 
@@ -137,7 +143,12 @@ with gr.Blocks() as demo:
         [input_image],
     )
 
-    undo_button.click(undo_points, [original_image, selected_points], [input_image])
-    submit_button.click(show_points, selected_points, dataframe)
+    undo_button.click(
+        undo_points, [original_image, selected_points], [input_image, selected_points]
+    )
+
+    print(selected_points)
+
+    submit_button.click(show_points, [selected_points], [dataframe])
 
 demo.queue().launch()
