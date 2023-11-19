@@ -18,6 +18,7 @@ video_examples = [
 def store_video(video):
     f = cv2.VideoCapture(video)
     _, frame = f.read()
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     f.release()
 
     return (
