@@ -27,12 +27,3 @@ def store_video(video):
         gr.update(visible=False),
         gr.update(visible=True, value=frame),
     )
-
-
-def video_selected(video_input, first_frame):
-    f = first_frame  # np.array(first_frame).squeeze()
-    f = cv2.cvtColor(f, cv2.COLOR_BGR2RGB)
-
-    return gr.update(visible=True, value=f), gr.update(
-        value=track_bar_path(video_input), visible=True, scale=1
-    )
