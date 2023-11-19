@@ -56,7 +56,7 @@ def undo_points(orig_img, sel_pix):
                 thickness=5,
             )
 
-    return temp if isinstance(temp, np.ndarray) else np.array(temp), sel_pix
+    return np.array(temp), sel_pix
 
 
 def show_points(selected_points):

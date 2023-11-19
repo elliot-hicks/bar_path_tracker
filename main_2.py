@@ -1,10 +1,12 @@
-import os
+import sys
 import cv2
 import numpy as np
 import gradio as gr
 from PIL import Image
 
-from bar_path_tracker.object_tracker import ObjectTracker
+sys.path.append("src/")
+
+from src.bar_path_tracker.object_tracker import ObjectTracker
 
 plate_size = 0.43
 
@@ -59,6 +61,7 @@ video_examples = [
 
 
 def store_video(video):
+    print(video)
     f = cv2.VideoCapture(video)
     _, frame = f.read()
     f.release()

@@ -86,21 +86,24 @@ class ObjectTracker:
         video = cv2.VideoCapture(os.path.join(self.repo_path, video_path))
         time = video.get(cv2.CAP_PROP_FPS) / 1000
         ret, frame = video.read()
+
+        frame_width, frame_height = frame.shape[1], frame.shape[0]
+
         if not ret:
             print("cannot read the video")
 
         # Resize the video for a more convenient view
-        frame = cv2.resize(frame, [frame_width // 2, frame_height // 2])
+        frame = cv2.resize(frame, [frame_width // 1, frame_height // 1])
         mask = np.zeros_like(frame)
 
-        output_path = f"data/results/{self.tracker_type}.mp4"
+        output_path = f"src/data/results/{self.tracker_type}.mp4"
 
         # Initialize video writer to save the results
         output = cv2.VideoWriter(
             output_path,
             cv2.VideoWriter_fourcc(*"XVID"),
             60.0,
-            (frame_width // 2, frame_height // 2),
+            (frame_width // 1, frame_height // 1),
             True,
         )
 
@@ -114,7 +117,7 @@ class ObjectTracker:
             if not ret:
                 break
 
-            frame = cv2.resize(frame, [frame_width // 2, frame_height // 2])
+            frame = cv2.resize(frame, [frame_width // 1, frame_height // 1])
             timer = cv2.getTickCount()
             ret, bbox = self.tracker.update(frame)
             fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
@@ -126,7 +129,6 @@ class ObjectTracker:
                     int(bbox[1] + bbox[3]),
                 )  # bottom right
                 centre = [int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)]
-
                 mask = cv2.line(mask, previous_centre, centre, line_colour, 2)
                 frame = cv2.rectangle(frame, top_left, bottom_right, box_colour, 2, 1)
 
