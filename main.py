@@ -80,4 +80,4 @@ with gr.Blocks() as demo:
         track_bar_path, [uploaded_training_video, selected_points], [bar_path_video]
     )
 
-demo.queue().launch(share=True)
+demo.queue().launch(share=False)
