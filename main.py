@@ -5,11 +5,7 @@ import gradio as gr
 from PIL import Image
 
 from src.gradio_gui.bbox_utils import get_point, show_points, store_img, undo_points
-from src.gradio_gui.video_utils import (
-    store_video,
-    video_selected,
-    track_bar_path,
-)
+from src.gradio_gui.video_utils import store_video, video_selected
 from src.gradio_gui.tracker_utils import track_bar_path
 
 
@@ -27,20 +23,17 @@ with gr.Blocks() as demo:
             uploaded_training_video = gr.Video(
                 label="Upload Training Video",
             )
+            selected_points = gr.State([])  # store points
             bounding_box_screen = gr.Image(
-                value=None, label="Draw Bounding Box", visible=False, interactive=False
+                value=None,
+                label="Draw Bounding Box",
+                visible=False,
+                interactive=False,
+                type="numpy",
             )
             bar_path_video = gr.Video(value=None, label="Bar Path", interactive=False)
         with gr.Row():
             with gr.Column():
-                # input image
-                original_image = gr.State(
-                    value=None
-                )  # store original image without points, default None
-
-                # basic blocks:
-                input_image = gr.Image(type="numpy")
-                selected_points = gr.State([])  # store points
                 undo_button = gr.Button("Undo point")
                 submit_button = gr.Button("Submit")
 
