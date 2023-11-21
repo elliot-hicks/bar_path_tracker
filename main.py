@@ -5,9 +5,9 @@ import gradio as gr
 from PIL import Image
 
 from src.gradio_gui.bbox_utils import get_point, show_points, store_img, undo_points
-from src.gradio_gui.video_utils import store_video, video_selected
+from src.gradio_gui.video_utils import store_video
 from src.gradio_gui.tracker_utils import track_bar_path
-
+from src.gradio_gui.plot_utils import return_plot
 
 # image examples
 # in each list, the first element is image path,
@@ -20,6 +20,7 @@ with gr.Blocks() as demo:
         with gr.Row():
             original_video = gr.State(value=None)  # store original video
             first_frame = gr.State(value=None)  # store original video
+            bar_path_stats = gr.State(value=None)
             uploaded_training_video = gr.Video(
                 label="Upload Training Video",
             )
@@ -43,6 +44,8 @@ with gr.Blocks() as demo:
                 col_count=(2, "fixed"),
                 datatype=["number", "number"],
             )
+        with gr.Row():
+            plot = gr.Plot()
     # When video is uploaded:
     # return the video, first frame/ thumbnail,
     uploaded_training_video.upload(
@@ -70,7 +73,10 @@ with gr.Blocks() as demo:
 
     submit_button.click(show_points, [selected_points], [dataframe])
     submit_button.click(
-        track_bar_path, [uploaded_training_video, selected_points], [bar_path_video]
+        track_bar_path,
+        [uploaded_training_video, selected_points],
+        [bar_path_video, plot],
     )
+
 
 demo.queue().launch(share=False)

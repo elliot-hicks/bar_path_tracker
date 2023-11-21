@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import sys
 import gradio as gr
+from src.gradio_gui.plot_utils import return_plot
 
 sys.path.append("src/")
 
@@ -42,4 +43,8 @@ def track_bar_path(video, bounding_box):
         False,
     )
 
-    return gr.update(value=video)
+    stats, reps = t.get_set_summary(bar_path, 70)
+
+    plot = return_plot(stats)
+
+    return gr.update(value=video), gr.update(value=plot)
