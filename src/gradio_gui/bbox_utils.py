@@ -3,8 +3,8 @@ import numpy as np
 import gradio as gr
 
 # points color and marker
-colors = [(255, 0, 0), (0, 255, 0)]
-markers = [1, 5]
+colors = [(255, 255, 255), (0, 255, 0)]
+markers = [0, 5]
 
 
 # once user upload an image, the original image is stored in `original_image`
@@ -22,7 +22,7 @@ def get_point(img, sel_pix, evt: gr.SelectData):
             cv2.drawMarker(
                 img,
                 point,
-                colors[1],
+                colors[0],
                 markerType=markers[0],
                 markerSize=0,
                 thickness=5,
@@ -31,7 +31,7 @@ def get_point(img, sel_pix, evt: gr.SelectData):
         if len(sel_pix) == 2:
             start_point = sel_pix[0]
             end_point = sel_pix[1]
-            color = (255, 0, 0)
+            color = (255, 255, 255)
             thickness = 2
             cv2.rectangle(img, start_point, end_point, color, thickness)
             cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -50,7 +50,7 @@ def undo_points(orig_img, sel_pix):
             cv2.drawMarker(
                 temp,
                 point,
-                colors[1],
+                colors[0],
                 markerType=markers[0],
                 markerSize=00,
                 thickness=5,

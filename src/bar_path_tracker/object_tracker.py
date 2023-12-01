@@ -129,7 +129,7 @@ class ObjectTracker:
                     int(bbox[1] + bbox[3]),
                 )  # bottom right
                 centre = [int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)]
-                mask = cv2.line(mask, previous_centre, centre, line_colour, 2)
+                mask = cv2.line(mask, previous_centre, centre, line_colour, 1)
                 frame = cv2.rectangle(frame, top_left, bottom_right, box_colour, 2, 1)
 
                 centre_x = centre[0] - starting_bbox_centre[0]

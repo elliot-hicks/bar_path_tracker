@@ -1,13 +1,7 @@
-import sys
-import cv2
-import numpy as np
 import gradio as gr
-from PIL import Image
-
-from src.gradio_gui.bbox_utils import get_point, show_points, store_img, undo_points
+from src.gradio_gui.bbox_utils import get_point, show_points, undo_points
 from src.gradio_gui.video_utils import store_video
 from src.gradio_gui.tracker_utils import track_bar_path
-from src.gradio_gui.plot_utils import return_plot
 
 # image examples
 # in each list, the first element is image path,
@@ -45,7 +39,8 @@ with gr.Blocks() as demo:
                 datatype=["number", "number"],
             )
         with gr.Row():
-            plot = gr.Plot()
+            speed_plot = gr.Plot()
+            acceleration_plot = gr.Plot()
     # When video is uploaded:
     # return the video, first frame/ thumbnail,
     uploaded_training_video.upload(
@@ -75,7 +70,7 @@ with gr.Blocks() as demo:
     submit_button.click(
         track_bar_path,
         [uploaded_training_video, selected_points],
-        [bar_path_video, plot],
+        [bar_path_video, speed_plot, acceleration_plot],
     )
 
 

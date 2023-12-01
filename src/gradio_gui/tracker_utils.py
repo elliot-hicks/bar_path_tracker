@@ -2,8 +2,13 @@ import os
 import cv2
 import numpy as np
 import sys
+import pandas as pd
 import gradio as gr
-from src.gradio_gui.plot_utils import return_plot
+from src.gradio_gui.plot_utils import (
+    return_acceleration_plot,
+    return_speed_plot,
+    return_bar_plot,
+)
 
 sys.path.append("src/")
 
@@ -45,6 +50,42 @@ def track_bar_path(video, bounding_box):
 
     stats, reps = t.get_set_summary(bar_path, 70)
 
-    plot = return_plot(stats)
+    # stats: {time: {'speeds', 'accelerations', 'x_distance','y_distance'}}
+    # reps:  {1: {'frame_inds': [0, 150], 'times': [0.033, 5.037]}
+    dataframe = stats_to_pd_dataframe(stats, reps)
+    speed_plot = return_speed_plot(dataframe)
+    acceleration_plot = return_bar_plot(dataframe)
 
-    return gr.update(value=video), gr.update(value=plot)
+    return (
+        gr.update(value=video),
+        gr.update(value=speed_plot),
+        gr.update(value=acceleration_plot),
+    )
+
+
+def stats_to_pd_dataframe(stats, rep_stats):
+    times = list(stats.keys())
+    speeds = []
+    accelerations = []
+    x_distances = []
+    y_distances = []
+
+    for t in times:
+        speeds.append(stats[t]["speeds"])
+        accelerations.append(stats[t]["accelerations"])
+        x_distances.append(stats[t]["x_distance"])
+        y_distances.append(stats[t]["y_distance"])
+
+    reps = [0] * len(times)
+    reps = np.array(reps)
+
+    for rep, rep_times in rep_stats.items():
+        rep_frame_inds = rep_times["frame_inds"]
+        reps[rep_frame_inds[0] : rep_frame_inds[1]] = int(rep)
+
+    data = list(zip(reps, times, x_distances, y_distances, speeds, accelerations))
+    labels = ["rep", "time", "x_distance", "y_distance", "speed", "acceleration"]
+
+    data = pd.DataFrame(data, columns=labels)
+
+    return data
