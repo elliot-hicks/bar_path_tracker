@@ -41,9 +41,12 @@ with gr.Blocks(theme=custom_theme) as demo:
                     visible=False,
                     height="50vw",
                 )
-                undo_button = gr.Button("Undo point")
-                submit_button = gr.Button("Submit")
+                with gr.Row():
+                    undo_button = gr.Button("Undo point")
+                    submit_button = gr.Button("Submit")
 
+            with gr.Tab("Distance"):
+                distance_plot = gr.Plot()
             with gr.Tab("Speed"):
                 speed_plot = gr.Plot()
             with gr.Tab("Acceleration"):
@@ -77,7 +80,13 @@ with gr.Blocks(theme=custom_theme) as demo:
     submit_button.click(
         track_bar_path,
         [uploaded_training_video, selected_points],
-        [bounding_box_screen, bar_path_video, speed_plot, acceleration_plot],
+        [
+            bounding_box_screen,
+            bar_path_video,
+            speed_plot,
+            acceleration_plot,
+            distance_plot,
+        ],
     )
 
 

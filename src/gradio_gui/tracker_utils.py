@@ -8,6 +8,7 @@ from src.gradio_gui.plot_utils import (
     return_acceleration_plot,
     return_speed_plot,
     return_bar_plot,
+    return_distance_plot,
 )
 
 sys.path.append("src/")
@@ -55,12 +56,14 @@ def track_bar_path(video, bounding_box):
     dataframe = stats_to_pd_dataframe(stats, reps)
     speed_plot = return_speed_plot(dataframe)
     acceleration_plot = return_bar_plot(dataframe)
+    distance_plot = return_distance_plot(dataframe)
 
     return (
         gr.update(visible=False),
         gr.update(value=video, visible=True),
         gr.update(value=speed_plot),
         gr.update(value=acceleration_plot),
+        gr.update(value=distance_plot),
     )
 
 

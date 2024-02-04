@@ -16,8 +16,8 @@ class ObjectTracker:
         self.tracker = cv2.TrackerCSRT_create()
         self.tracker_type = "CSRT"
 
-        self.frame_height = 3000
-        self.frame_width = 3000
+        self.frame_height = 1000
+        self.frame_width = 500
 
     def open_and_display_video(self, path: str) -> None:
         """Open Video
@@ -74,10 +74,10 @@ class ObjectTracker:
         meters_per_pixel,
         verbose=False,
     ):
-        line_colour = (255, 255, 255)
-        box_colour = (255, 255, 255)
-        frame_height = 3000
-        frame_width = 3000
+        line_colour = (5, 150, 105)
+        box_colour = (5, 150, 105)
+        frame_height = 1000
+        frame_width = 500
         bar_path = {}
         previous_centre = starting_bbox_centre
 

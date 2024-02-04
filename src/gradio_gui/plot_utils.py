@@ -38,7 +38,26 @@ def add_rep_boxes(fig, dataframe, key):
 def return_speed_plot(dataframe):
     fig = px.line(dataframe, x="time", y="speed")
     fig = add_rep_boxes(fig, dataframe, key="speed")
+    fig.update_traces(marker_color="#059669")
+    fig.update_layout(
+        {
+            "paper_bgcolor": "rgb(68, 87, 96)",
+            "plot_bgcolor": "rgb(68, 87, 96)",
+        }
+    )
+    return fig
 
+
+def return_distance_plot(dataframe):
+    fig = px.line(dataframe, x="time", y="y_distance")
+    fig = add_rep_boxes(fig, dataframe, key="y_distance")
+    fig.update_traces(marker_color="#059669")
+    fig.update_layout(
+        {
+            "paper_bgcolor": "rgb(68, 87, 96)",
+            "plot_bgcolor": "rgb(68, 87, 96)",
+        }
+    )
     return fig
 
 
@@ -57,7 +76,13 @@ def return_bar_plot(dataframe):
         rep_max_speeds.append(rep_max_speed)
 
     fig = px.bar(x=plot_reps, y=rep_max_speeds)
-
+    fig.update_traces(marker_color="#059669")
+    fig.update_layout(
+        {
+            "paper_bgcolor": "rgb(68, 87, 96)",
+            "plot_bgcolor": "rgb(68, 87, 96)",
+        }
+    )
     return fig
 
 
