@@ -57,7 +57,8 @@ def track_bar_path(video, bounding_box):
     acceleration_plot = return_bar_plot(dataframe)
 
     return (
-        gr.update(value=video),
+        gr.update(visible=False),
+        gr.update(value=video, visible=True),
         gr.update(value=speed_plot),
         gr.update(value=acceleration_plot),
     )

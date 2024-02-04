@@ -16,8 +16,8 @@ class ObjectTracker:
         self.tracker = cv2.TrackerCSRT_create()
         self.tracker_type = "CSRT"
 
-        self.frame_height = 1000
-        self.frame_width = 1000
+        self.frame_height = 3000
+        self.frame_width = 3000
 
     def open_and_display_video(self, path: str) -> None:
         """Open Video
@@ -76,8 +76,8 @@ class ObjectTracker:
     ):
         line_colour = (255, 255, 255)
         box_colour = (255, 255, 255)
-        frame_height = 1000
-        frame_width = 1000
+        frame_height = 3000
+        frame_width = 3000
         bar_path = {}
         previous_centre = starting_bbox_centre
 
@@ -110,8 +110,15 @@ class ObjectTracker:
         # Select the bounding box in the first frame
         ret = self.tracker.init(frame, starting_bbox)
 
+        counter = 0
+
         # Start tracking
         while True:
+            counter += 1
+
+            if counter % 5 != 0:
+                continue
+
             ret, frame = video.read()
             time = video.get(cv2.CAP_PROP_POS_MSEC) / 1000
             if not ret:
@@ -129,9 +136,9 @@ class ObjectTracker:
                     int(bbox[1] + bbox[3]),
                 )  # bottom right
                 centre = [int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)]
-                mask = cv2.line(mask, previous_centre, centre, line_colour, 1)
-                frame = cv2.rectangle(frame, top_left, bottom_right, box_colour, 2, 1)
-
+                mask = cv2.line(mask, previous_centre, centre, line_colour, 2)
+                # frame = cv2.rectangle(frame, top_left, bottom_right, box_colour, 2, 1)
+                # frame = cv2.circle(frame, centre, 5, box_colour)
                 centre_x = centre[0] - starting_bbox_centre[0]
                 centre_y = starting_bbox_centre[1] - centre[1]
 
