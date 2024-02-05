@@ -3,6 +3,7 @@ from src.gradio_gui.bbox_utils import get_point, show_points, undo_points
 from src.gradio_gui.video_utils import store_video
 from src.gradio_gui.tracker_utils import track_bar_path
 from src.gradio_gui.theme import Theme
+from src.gradio_gui.information_utils import add_info
 
 # image examples
 # in each list, the first element is image path,
@@ -42,6 +43,39 @@ with gr.Blocks(theme=custom_theme) as demo:
                     height="50vw",
                 )
                 with gr.Row():
+                    weight_box = gr.Textbox(
+                        value="",
+                        label="Weight",
+                        info="Insert the weight used",
+                        visible=False,
+                        interactive=True,
+                    )
+                    units_drop_down = gr.Dropdown(
+                        ["kg", "lb"],
+                        multiselect=False,
+                        interactive=True,
+                        visible=False,
+                        value="kg",
+                        info="Select unit of weight",
+                    )
+                rpe_slider = gr.Slider(
+                    0,
+                    10,
+                    step=0.5,
+                    value="",
+                    label="RPE",
+                    info="Insert the RPE",
+                    visible=False,
+                    interactive=True,
+                )
+                exercise_box = gr.Textbox(
+                    value="",
+                    label="Exercise",
+                    info="Insert the exercise for tracking",
+                    visible=False,
+                    interactive=True,
+                )
+                with gr.Row():
                     undo_button = gr.Button("Undo point")
                     submit_button = gr.Button("Submit")
 
@@ -75,6 +109,21 @@ with gr.Blocks(theme=custom_theme) as demo:
         undo_points,
         [first_frame, selected_points],
         [bounding_box_screen, selected_points],
+    )
+
+    submit_button.click(
+        add_info,
+        [],
+        [
+            bar_path_video,
+            original_video,
+            bounding_box_screen,
+            uploaded_training_video,
+            weight_box,
+            units_drop_down,
+            rpe_slider,
+            exercise_box,
+        ],
     )
 
     submit_button.click(

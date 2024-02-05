@@ -10,22 +10,18 @@ class Theme(Base):
     def __init__(
         self,
         *,
-        primary_hue: colors.Color | str = colors.green,
-        secondary_hue: colors.Color | str = colors.red,
+        primary_hue: colors.Color | str = colors.emerald,
+        secondary_hue: colors.Color | str = colors.gray,
         neutral_hue: colors.Color | str = colors.emerald,
         spacing_size: sizes.Size | str = sizes.spacing_md,
         radius_size: sizes.Size | str = sizes.radius_md,
         text_size: sizes.Size | str = sizes.text_lg,
-        font: fonts.Font
-        | str
-        | Iterable[fonts.Font | str] = (
+        font: fonts.Font | str | Iterable[fonts.Font | str] = (
             fonts.GoogleFont("Quicksand"),
             "ui-sans-serif",
             "sans-serif",
         ),
-        font_mono: fonts.Font
-        | str
-        | Iterable[fonts.Font | str] = (
+        font_mono: fonts.Font | str | Iterable[fonts.Font | str] = (
             fonts.GoogleFont("IBM Plex Mono"),
             "ui-monospace",
             "monospace",
@@ -42,8 +38,8 @@ class Theme(Base):
             font_mono=font_mono,
         )
         super().set(
-            body_background_fill="rgb(68, 87, 96)",
-            body_background_fill_dark="rgb(68, 87, 96)",
+            body_background_fill="rgb(30,30,30)",  # "rgb(68, 87, 96)",
+            body_background_fill_dark="rgb(30,30,30)",  # "rgb(68, 87, 96)",
             button_primary_background_fill="linear-gradient(90deg, *primary_300, *secondary_400)",
             button_primary_background_fill_hover="rgb(88, 107, 116)",
             button_primary_text_color="white",
@@ -55,4 +51,6 @@ class Theme(Base):
             block_shadow="*shadow_drop_lg",
             button_shadow="*shadow_drop_lg",
             button_large_padding="16px",
+            body_text_color="rgb(250,250, 250)",
+            body_text_color_dark="rgb(250,250,250)",
         )

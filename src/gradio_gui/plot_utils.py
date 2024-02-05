@@ -38,11 +38,11 @@ def add_rep_boxes(fig, dataframe, key):
 def return_speed_plot(dataframe):
     fig = px.line(dataframe, x="time", y="speed")
     fig = add_rep_boxes(fig, dataframe, key="speed")
-    fig.update_traces(marker_color="#059669")
+    fig["data"][0]["line"]["color"] = "#00ff00"
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(68, 87, 96)",
-            "plot_bgcolor": "rgb(68, 87, 96)",
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
         }
     )
     return fig
@@ -51,11 +51,11 @@ def return_speed_plot(dataframe):
 def return_distance_plot(dataframe):
     fig = px.line(dataframe, x="time", y="y_distance")
     fig = add_rep_boxes(fig, dataframe, key="y_distance")
-    fig.update_traces(marker_color="#059669")
+    fig["data"][0]["line"]["color"] = "#00ff00"
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(68, 87, 96)",
-            "plot_bgcolor": "rgb(68, 87, 96)",
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
         }
     )
     return fig
@@ -79,8 +79,8 @@ def return_bar_plot(dataframe):
     fig.update_traces(marker_color="#059669")
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(68, 87, 96)",
-            "plot_bgcolor": "rgb(68, 87, 96)",
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
         }
     )
     return fig
@@ -89,5 +89,11 @@ def return_bar_plot(dataframe):
 def return_acceleration_plot(dataframe):
     fig = px.line(dataframe, x="time", y="acceleration")
     fig = add_rep_boxes(fig, dataframe, key="acceleration")
-
+    fig["data"][0]["line"]["color"] = "#00ff00"
+    fig.update_layout(
+        {
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
+        }
+    )
     return fig
