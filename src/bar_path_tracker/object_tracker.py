@@ -17,7 +17,7 @@ class ObjectTracker:
         self.tracker_type = "CSRT"
 
         self.frame_height = 1000
-        self.frame_width = 500
+        self.frame_width = 1000
 
     def open_and_display_video(self, path: str) -> None:
         """Open Video
@@ -66,6 +66,21 @@ class ObjectTracker:
 
         return bbox, start_bbox_centre, meters_per_pixel
 
+    def smooth_line(self, values: list[float], window_length: int = 8):
+
+        smoothed_line = np.empty_like(values)
+
+        for i in range(len(values)):
+            smoothed_line[i] = np.mean(
+                values[
+                    max(0, i - window_length // 2) : min(
+                        len(smoothed_line), i + window_length // 2
+                    )
+                ]
+            )
+
+        return smoothed_line
+
     def track_bar_path(
         self,
         video_path,
@@ -74,12 +89,14 @@ class ObjectTracker:
         meters_per_pixel,
         verbose=False,
     ):
-        line_colour = (5, 150, 105)
-        box_colour = (5, 150, 105)
+        line_colour = (50, 180, 185)
         frame_height = 1000
-        frame_width = 500
+        frame_width = 1000
         bar_path = {}
         previous_centre = starting_bbox_centre
+
+        x_positions = []
+        y_positions = []
 
         # load video:
         cv2.destroyAllWindows()
@@ -96,17 +113,6 @@ class ObjectTracker:
         frame = cv2.resize(frame, [frame_width // 1, frame_height // 1])
         mask = np.zeros_like(frame)
 
-        output_path = f"src/data/results/{self.tracker_type}.mp4"
-
-        # Initialize video writer to save the results
-        output = cv2.VideoWriter(
-            output_path,
-            cv2.VideoWriter_fourcc(*"XVID"),
-            60.0,
-            (frame_width // 1, frame_height // 1),
-            True,
-        )
-
         # Select the bounding box in the first frame
         ret = self.tracker.init(frame, starting_bbox)
 
@@ -115,9 +121,6 @@ class ObjectTracker:
         # Start tracking
         while True:
             counter += 1
-
-            if counter % 5 != 0:
-                continue
 
             ret, frame = video.read()
             time = video.get(cv2.CAP_PROP_POS_MSEC) / 1000
@@ -142,6 +145,9 @@ class ObjectTracker:
                 centre_x = centre[0] - starting_bbox_centre[0]
                 centre_y = starting_bbox_centre[1] - centre[1]
 
+                x_positions.append(centre[1])
+                y_positions.append(centre[0])
+
                 bar_path[round(time, 3)] = {
                     "centre_in_meters": [
                         centre_x * meters_per_pixel,
@@ -163,44 +169,57 @@ class ObjectTracker:
                     2,
                 )
 
-            # Show stats:
+            previous_centre = centre
 
-            if verbose:
-                cv2.putText(
-                    frame,
-                    self.tracker_type + " Tracker",
-                    (0, 20),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.75,
-                    (255, 255, 255),
-                    2,
-                )
-                cv2.putText(
-                    frame,
-                    "FPS: " + str(int(fps)),
-                    (0, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.75,
-                    (255, 255, 255),
-                    2,
-                )
-                cv2.putText(
-                    frame,
-                    "Time: " + str(round(time, 1)) + "s",
-                    (0, 80),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.75,
-                    (255, 255, 255),
-                    2,
-                )
-                cv2.imshow("Tracking", full_frame)
+        x_positions_smoothed = self.smooth_line(x_positions)
+        y_positions_smoothed = self.smooth_line(y_positions)
 
-                if cv2.waitKey(1) & 0xFF == ord("q"):
-                    break
+        output_path = f"src/data/results/{self.tracker_type}.mp4"
+
+        # Initialize video writer to save the results
+        output = cv2.VideoWriter(
+            output_path,
+            cv2.VideoWriter_fourcc(*"XVID"),
+            60.0,
+            (frame_width // 1, frame_height // 1),
+            True,
+        )
+        index = 0
+        cv2.destroyAllWindows()
+        video = cv2.VideoCapture(os.path.join(self.repo_path, video_path))
+        time = video.get(cv2.CAP_PROP_FPS) / 1000
+        ret, frame = video.read()
+        # Start tracking
+
+        frame_index = 0
+        previous_centre = starting_bbox_centre
+        empty_mask = np.zeros_like(frame)
+
+        while True:
+            ret, frame = video.read()
+            time = video.get(cv2.CAP_PROP_POS_MSEC) / 1000
+            if not ret:
+                break
+
+            frame = cv2.resize(frame, [frame_width // 1, frame_height // 1])
+
+            mask = empty_mask.copy()
+            for i in range(max(index - 41, 0), index):
+                mask = cv2.line(
+                    mask.copy(),
+                    [
+                        y_positions_smoothed[max(i - 1, 0)],
+                        x_positions_smoothed[max(i - 1, 0)],
+                    ],
+                    [y_positions_smoothed[i], x_positions_smoothed[i]],
+                    line_colour,
+                    2,
+                )
 
             full_frame = cv2.add(frame, mask)
             output.write(full_frame)
-            previous_centre = centre
+            previous_centre = [y_positions_smoothed[index], x_positions_smoothed[index]]
+            index += 1
 
         video.release()
         output.release()

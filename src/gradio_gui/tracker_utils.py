@@ -17,13 +17,10 @@ from bar_path_tracker.object_tracker import ObjectTracker
 
 
 def track_bar_path(video, bounding_box):
-    print(bounding_box)
 
     f = cv2.VideoCapture(video)
 
     _, frame = f.read()
-
-    print("Print Gradio shape", frame.shape)
 
     t = ObjectTracker()
 
