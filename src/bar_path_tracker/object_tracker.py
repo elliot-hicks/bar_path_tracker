@@ -66,7 +66,7 @@ class ObjectTracker:
 
         return bbox, start_bbox_centre, meters_per_pixel
 
-    def smooth_line(self, values: list[float], window_length: int = 8):
+    def smooth_line(self, values: list[float], window_length: int = 20):
 
         smoothed_line = np.empty_like(values)
 
@@ -89,7 +89,8 @@ class ObjectTracker:
         meters_per_pixel,
         verbose=False,
     ):
-        line_colour = (50, 180, 185)
+        line_colour = (5, 150, 105)
+
         frame_height = 1000
         frame_width = 1000
         bar_path = {}
@@ -194,6 +195,9 @@ class ObjectTracker:
         frame_index = 0
         previous_centre = starting_bbox_centre
         empty_mask = np.zeros_like(frame)
+
+        print(empty_mask.shape)
+        print(frame.shape)
 
         while True:
             ret, frame = video.read()

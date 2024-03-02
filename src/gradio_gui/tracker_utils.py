@@ -11,6 +11,8 @@ from src.gradio_gui.plot_utils import (
     return_distance_plot,
 )
 
+colors = [(5, 150, 105), (5, 150, 105)]
+
 sys.path.append("src/")
 
 from bar_path_tracker.object_tracker import ObjectTracker
@@ -57,7 +59,7 @@ def track_bar_path(video, bounding_box):
 
     return (
         gr.update(visible=False),
-        gr.update(value=video, visible=True),
+        gr.update(value=video),
         gr.update(value=speed_plot),
         gr.update(value=acceleration_plot),
         gr.update(value=distance_plot),

@@ -3,7 +3,7 @@ from src.gradio_gui.bbox_utils import get_point, show_points, undo_points
 from src.gradio_gui.video_utils import store_video
 from src.gradio_gui.tracker_utils import track_bar_path
 from src.gradio_gui.theme import Theme
-from src.gradio_gui.information_utils import add_info
+from src.gradio_gui.information_utils import add_info, submit_info
 
 # image examples
 # in each list, the first element is image path,
@@ -68,8 +68,8 @@ with gr.Blocks(theme=custom_theme) as demo:
                     visible=False,
                     interactive=True,
                 )
-                exercise_box = gr.Textbox(
-                    value="",
+                exercise_box = gr.Dropdown(
+                    ["Squat", "Bench", "Deadlift"],
                     label="Exercise",
                     info="Insert the exercise for tracking",
                     visible=False,
@@ -77,14 +77,15 @@ with gr.Blocks(theme=custom_theme) as demo:
                 )
                 with gr.Row():
                     undo_button = gr.Button("Undo point")
-                    submit_button = gr.Button("Submit")
+                    submit_button = gr.Button("Submit Bounding Box")
+                    submit_info_button = gr.Button("Submit Data", visible=False)
 
             with gr.Tab("Distance"):
-                distance_plot = gr.Plot()
+                distance_plot = gr.Plot(visible=False)
             with gr.Tab("Speed"):
-                speed_plot = gr.Plot()
+                speed_plot = gr.Plot(visible=False)
             with gr.Tab("Acceleration"):
-                acceleration_plot = gr.Plot()
+                acceleration_plot = gr.Plot(visible=False)
 
     # When video is uploaded:
     # return the video, first frame/ thumbnail,
@@ -123,6 +124,9 @@ with gr.Blocks(theme=custom_theme) as demo:
             units_drop_down,
             rpe_slider,
             exercise_box,
+            submit_button,
+            undo_button,
+            submit_info_button,
         ],
     )
 
@@ -131,6 +135,22 @@ with gr.Blocks(theme=custom_theme) as demo:
         [uploaded_training_video, selected_points],
         [
             bounding_box_screen,
+            bar_path_video,
+            speed_plot,
+            acceleration_plot,
+            distance_plot,
+        ],
+    )
+
+    submit_info_button.click(
+        submit_info,
+        [],
+        [
+            submit_info_button,
+            weight_box,
+            units_drop_down,
+            rpe_slider,
+            exercise_box,
             bar_path_video,
             speed_plot,
             acceleration_plot,

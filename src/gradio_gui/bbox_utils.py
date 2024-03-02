@@ -4,7 +4,7 @@ import gradio as gr
 
 # points color and marker
 colors = [(5, 150, 105), (5, 150, 105)]
-markers = [4, 4]
+markers = [0, 0]
 
 
 # once user upload an image, the original image is stored in `original_image`
