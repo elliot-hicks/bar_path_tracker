@@ -10,8 +10,6 @@ from scipy.signal import savgol_filter
 
 class ObjectTracker:
     def __init__(self) -> None:
-        self.repo_path = r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker"
-        self.video_path = r"src\data\example_videos\bench_example.mp4"
 
         self.tracker = cv2.TrackerCSRT_create()
         self.tracker_type = "CSRT"
@@ -19,15 +17,15 @@ class ObjectTracker:
         self.frame_height = 1000
         self.frame_width = 1000
 
-    def open_and_display_video(self, path: str) -> None:
+    def open_and_display_video(self, video_path: str) -> None:
         """Open Video
         _
         """
-        vid = cv2.VideoCapture(os.path.join(self.repo_path, path))
+        vid = cv2.VideoCapture(video_path)
         if vid.isOpened() == False:
             print("Error opening video stream or file")
         else:
-            print(f"Playing video at {path}. Hit 'q' to quit.")
+            print(f"Playing video at {video_path}. Hit 'q' to quit.")
 
         while vid.isOpened():
             # Capture frame-by-frame
@@ -49,7 +47,7 @@ class ObjectTracker:
 
     def get_starting_bbox(self, video_path, plate_size):
         cv2.destroyAllWindows()
-        video = cv2.VideoCapture(os.path.join(self.repo_path, video_path))
+        video = cv2.VideoCapture(video_path)
         ret, frame = video.read()
         if not ret:
             print("cannot read the video")
@@ -101,7 +99,7 @@ class ObjectTracker:
 
         # load video:
         cv2.destroyAllWindows()
-        video = cv2.VideoCapture(os.path.join(self.repo_path, video_path))
+        video = cv2.VideoCapture(video_path)
         time = video.get(cv2.CAP_PROP_FPS) / 1000
         ret, frame = video.read()
 
@@ -187,7 +185,7 @@ class ObjectTracker:
         )
         index = 0
         cv2.destroyAllWindows()
-        video = cv2.VideoCapture(os.path.join(self.repo_path, video_path))
+        video = cv2.VideoCapture(video_path)
         time = video.get(cv2.CAP_PROP_FPS) / 1000
         ret, frame = video.read()
         # Start tracking
@@ -195,9 +193,6 @@ class ObjectTracker:
         frame_index = 0
         previous_centre = starting_bbox_centre
         empty_mask = np.zeros_like(frame)
-
-        print(empty_mask.shape)
-        print(frame.shape)
 
         while True:
             ret, frame = video.read()
@@ -387,113 +382,6 @@ class ObjectTracker:
                 c=c,
             )
             axs[i].set_title(title)
-
-    def show_video_with_stats(self, video_path, bar_path, stats, reps):
-        line_colour = (255, 255, 255)
-
-        # load video:
-        cv2.destroyAllWindows()
-        video = cv2.VideoCapture(os.path.join(self.repo_path, video_path))
-        time = video.get(cv2.CAP_PROP_FPS) / 1000
-        ret, frame = video.read()
-        if not ret:
-            print("cannot read the video")
-
-        # Resize the video for a more convinient view
-        frame = cv2.resize(frame, [self.frame_width // 2, self.frame_height // 2])
-        mask = np.zeros_like(frame)
-
-        # Initialize video writer to save the results
-        output = cv2.VideoWriter(
-            f"data/results/{self.tracker_type}_with_stats.mp4",
-            cv2.VideoWriter_fourcc(*"XVID"),
-            60.0,
-            (self.frame_width // 2, self.frame_height // 2),
-            True,
-        )
-
-        previous_centre = None
-
-        # Start tracking
-        while True:
-            ret, frame = video.read()
-            time = round(video.get(cv2.CAP_PROP_POS_MSEC) / 1000, 3)
-
-            if not ret:
-                break
-            rep_number = [
-                n
-                for (n, v) in reps.items()
-                if (time <= v["times"][1] and time >= v["times"][0])
-            ][0]
-
-            frame = cv2.resize(frame, [self.frame_width // 2, self.frame_height // 2])
-            timer = cv2.getTickCount()
-            fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
-
-            if time in list(bar_path.keys()):
-                centre = bar_path[round(time, 3)]["centre_global_in_pixels"]
-                if previous_centre is not None:
-                    mask = cv2.line(mask, previous_centre, centre, line_colour, 2)
-                previous_centre = centre
-                speed = stats[time]["speeds"]
-                acceleration = stats[time]["accelerations"]
-                cv2.putText(
-                    frame,
-                    "Speed: " + str(round(speed, 1)) + "m/s",
-                    (0, 60),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.75,
-                    (255, 255, 255),
-                    1,
-                )
-                cv2.putText(
-                    frame,
-                    "Acceleration: " + str(round(acceleration, 1)) + "m/s^2",
-                    (0, 80),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.75,
-                    (255, 255, 255),
-                    1,
-                )
-                cv2.putText(
-                    frame,
-                    "Rep Number: " + str(int(rep_number)),
-                    (0, 100),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.75,
-                    (255, 255, 255),
-                    1,
-                )
-            # Show stats:
-            cv2.putText(
-                frame,
-                self.tracker_type + " Tracker",
-                (0, 20),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.75,
-                (255, 255, 255),
-                1,
-            )
-            cv2.putText(
-                frame,
-                "Time: " + str(round(time, 1)) + "s",
-                (0, 40),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.75,
-                (255, 255, 255),
-                1,
-            )
-            full_frame = cv2.add(frame, mask)
-            cv2.imshow("Tracking", full_frame)
-            output.write(full_frame)
-
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
-
-        video.release()
-        output.release()
-        cv2.destroyAllWindows()
 
     def get_set_summary(self, bar_path, weight):
         stats = self.get_stats(bar_path, weight, True)

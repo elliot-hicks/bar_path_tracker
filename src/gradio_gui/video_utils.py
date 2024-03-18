@@ -1,21 +1,23 @@
-import os
+from typing import Tuple
+
 import cv2
-import numpy as np
 import gradio as gr
-from PIL import Image
-import sys
-
-sys.path.append("src/")
+import numpy as np
 
 
-video_examples = [
-    [
-        r"C:\Users\ellio\OneDrive\Desktop\GitHub\bar_path_tracker\src\data\example_videos\bench_example.mp4"
-    ]
-]
+def store_video(video: str) -> Tuple[str, np.ndarray, dict, dict]:
+    """Store video passed to upload
 
+    Args:
+        video (str): Path to video.
 
-def store_video(video):
+    Returns:
+        Tuple[str, np.ndarray, dict, dict]:
+        - Video path
+        - First frame
+        - Update for upload video box
+        - Update bounding box screen
+    """
     f = cv2.VideoCapture(video)
     _, frame = f.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

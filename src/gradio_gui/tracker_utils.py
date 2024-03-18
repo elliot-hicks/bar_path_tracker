@@ -1,14 +1,14 @@
-import os
-import cv2
-import numpy as np
 import sys
-import pandas as pd
+from typing import Tuple
+
 import gradio as gr
-from src.gradio_gui.plot_utils import (
-    return_acceleration_plot,
-    return_speed_plot,
+import numpy as np
+import pandas as pd
+
+from gradio_gui.plot_utils import (
     return_bar_plot,
     return_distance_plot,
+    return_speed_plot,
 )
 
 colors = [(5, 150, 105), (5, 150, 105)]
@@ -18,13 +18,32 @@ sys.path.append("src/")
 from bar_path_tracker.object_tracker import ObjectTracker
 
 
-def track_bar_path(video, bounding_box):
+def track_bar_path(
+    video: str, bounding_box: np.ndarray
+) -> Tuple[dict, dict, dict, dict, dict]:
+    """Given a video path and initial weight bounding box,
+    track a bar path.
 
-    f = cv2.VideoCapture(video)
+    Parameters
+    ----------
+    video : str
+        Path to video for tracking / analysis
+    bounding_box : np.ndarray
+        Initial bounding box for starting weight position.
 
-    _, frame = f.read()
+    Returns
+    -------
+    Tuple[dict, dict, dict, dict, dict]
+        Gradio updates:
+        - hide bounding box screen
+        - update bar path video
+        - update speed plot
+        - update acceleration plot
+        - update distance plot
+    """
 
-    t = ObjectTracker()
+    # Set up object tracker:
+    tracker = ObjectTracker()
 
     bounding_box = np.array(bounding_box).flatten()
 
@@ -38,9 +57,11 @@ def track_bar_path(video, bounding_box):
 
     starting_bbox = [top_left[0], top_left[1], width, height]
 
-    meters_per_pixel = 0.4
+    # approximate meters per pixel
+    meters_per_pixel = 0.45 / height  # gross approximation for now.
 
-    bar_path, video = t.track_bar_path(
+    # analyse video:
+    bar_path, video = tracker.track_bar_path(
         video,
         starting_bbox,
         starting_bbox_centre,
@@ -48,14 +69,15 @@ def track_bar_path(video, bounding_box):
         False,
     )
 
-    stats, reps = t.get_set_summary(bar_path, 70)
+    # Get stats and reps:
+    stats, reps = tracker.get_set_summary(bar_path, 70)
 
     # stats: {time: {'speeds', 'accelerations', 'x_distance','y_distance'}}
     # reps:  {1: {'frame_inds': [0, 150], 'times': [0.033, 5.037]}
-    dataframe = stats_to_pd_dataframe(stats, reps)
-    speed_plot = return_speed_plot(dataframe)
-    acceleration_plot = return_bar_plot(dataframe)
-    distance_plot = return_distance_plot(dataframe)
+    data_frame = stats_to_pd_dataframe(stats, reps)
+    speed_plot = return_speed_plot(data_frame)
+    acceleration_plot = return_bar_plot(data_frame)
+    distance_plot = return_distance_plot(data_frame)
 
     return (
         gr.update(visible=False),
@@ -66,7 +88,30 @@ def track_bar_path(video, bounding_box):
     )
 
 
-def stats_to_pd_dataframe(stats, rep_stats):
+def stats_to_pd_dataframe(
+    stats: dict[float, dict[str, float]], rep_stats: dict[str, dict[str, int]]
+) -> pd.DataFrame:
+    """Convert dictionaries of stats into a pandas DataFrame for ease of
+    reading.
+
+    Parameters
+    ----------
+    stats : dict[float, dict[str, float]]
+        Dictionary {time: {metric: metric_value}}
+    rep_stats : dict[str, dict[str, int]]
+        Dictionary {"rep": {"rep_inds": index, "rep_times": time}}
+
+    Returns
+    -------
+    pd.DataFrame
+        Dataset with columns:
+        - "rep",
+        - "time",
+        - "x_distance",
+        - "y_distance",
+        - "speed",
+        - "acceleration"
+    """
     times = list(stats.keys())
     speeds = []
     accelerations = []
