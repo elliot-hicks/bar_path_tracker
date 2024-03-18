@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import gradio as gr
+from typing import Tuple
 
 # points color and marker
 colors = [(5, 150, 105), (5, 150, 105)]
@@ -8,12 +9,27 @@ markers = [0, 0]
 
 
 # once user upload an image, the original image is stored in `original_image`
-def store_img(img):
+def store_img(img: np.ndarray):
     return img, []  # when new image is uploaded, `selected_points` should be empty
 
 
-# user click the image to get points, and show the points on the image
-def get_point(img, sel_pix, evt: gr.SelectData):
+def get_point(img: np.ndarray, sel_pix: list, evt: gr.SelectData) -> np.ndarray:
+    """User click the image to get points, and show the points on the image
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Bbox image
+    sel_pix : list
+        List of selected coords for bounding box
+    evt : gr.SelectData
+        Event for selecting pixel (mouse click)
+
+    Returns
+    -------
+    np.ndarray
+        Image frame with selected pixel shown.
+    """
     if len(sel_pix) < 2:
         sel_pix.append(evt.index)  # append the background_point
 
@@ -40,7 +56,21 @@ def get_point(img, sel_pix, evt: gr.SelectData):
 
 
 # undo the selected point
-def undo_points(orig_img, sel_pix):
+def undo_points(orig_img: np.ndarray, sel_pix: list) -> Tuple[np.ndarray, list[float]]:
+    """Undo a selected point
+
+    Parameters
+    ----------
+    orig_img : np.ndarray
+        Original first frame image for the bbox
+    sel_pix : list
+        Selected pixels
+
+    Returns
+    -------
+    Tuple[np.ndarray, list[float]]
+        New bbox image, new selected points.
+    """
     temp = orig_img.copy()
 
     # draw points
@@ -59,5 +89,5 @@ def undo_points(orig_img, sel_pix):
     return np.array(temp), sel_pix
 
 
-def show_points(selected_points):
+def show_points(selected_points: list):
     return gr.update(value=selected_points)

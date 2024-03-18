@@ -1,14 +1,12 @@
+import sys
 import gradio as gr
-from src.gradio_gui.bbox_utils import get_point, show_points, undo_points
-from src.gradio_gui.video_utils import store_video
-from src.gradio_gui.tracker_utils import track_bar_path
-from src.gradio_gui.theme import Theme
-from src.gradio_gui.information_utils import add_info, submit_info
+from gradio_gui.bbox_utils import get_point, undo_points
+from gradio_gui.video_utils import store_video
+from gradio_gui.tracker_utils import track_bar_path
+from gradio_gui.theme import Theme
+from gradio_gui.information_utils import add_info, submit_info
 
-# image examples
-# in each list, the first element is image path,
-# the second is id (used for original_image State),
-# the third is an empty list (used for selected_points State)
+sys.path.append(".")
 
 custom_theme = Theme()
 
@@ -100,33 +98,36 @@ with gr.Blocks(theme=custom_theme) as demo:
         ],
     )
 
+    # Select points for bounding box:
     bounding_box_screen.select(
         get_point,
         [bounding_box_screen, selected_points],
         [bounding_box_screen],
     )
 
+    # Undo a chosen corner of the bounding box:
     undo_button.click(
         undo_points,
         [first_frame, selected_points],
         [bounding_box_screen, selected_points],
     )
 
+    # Submit button for bounding box:
     submit_button.click(
         add_info,
         [],
         [
-            bar_path_video,
-            original_video,
-            bounding_box_screen,
-            uploaded_training_video,
-            weight_box,
-            units_drop_down,
-            rpe_slider,
-            exercise_box,
-            submit_button,
-            undo_button,
-            submit_info_button,
+            bar_path_video,  # hide
+            original_video,  # hide
+            bounding_box_screen,  # hide
+            uploaded_training_video,  # hide
+            weight_box,  # show
+            units_drop_down,  # show
+            rpe_slider,  # show
+            exercise_box,  # show
+            submit_button,  # hide
+            undo_button,  # hide
+            submit_info_button,  # show
         ],
     )
 
@@ -134,11 +135,11 @@ with gr.Blocks(theme=custom_theme) as demo:
         track_bar_path,
         [uploaded_training_video, selected_points],
         [
-            bounding_box_screen,
-            bar_path_video,
-            speed_plot,
-            acceleration_plot,
-            distance_plot,
+            bounding_box_screen,  # update value
+            bar_path_video,  # update value
+            speed_plot,  # update value
+            acceleration_plot,  # update value
+            distance_plot,  # update value
         ],
     )
 
@@ -146,15 +147,15 @@ with gr.Blocks(theme=custom_theme) as demo:
         submit_info,
         [],
         [
-            submit_info_button,
-            weight_box,
-            units_drop_down,
-            rpe_slider,
-            exercise_box,
-            bar_path_video,
-            speed_plot,
-            acceleration_plot,
-            distance_plot,
+            submit_info_button,  # hide
+            weight_box,  # hide
+            units_drop_down,  # hide
+            rpe_slider,  # hide
+            exercise_box,  # hide
+            bar_path_video,  # show
+            speed_plot,  # show
+            acceleration_plot,  # show
+            distance_plot,  # show
         ],
     )
 

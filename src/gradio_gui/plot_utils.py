@@ -1,9 +1,27 @@
 import plotly.express as px
 import numpy as np
-import pandas as pd
+from pandas import DataFrame
+from plotly.graph_objects import Figure
 
 
-def add_rep_boxes(fig, dataframe, key):
+def add_rep_boxes(fig: Figure, dataframe: DataFrame, key: str) -> Figure:
+    """Annotate plot with rep regions (add a coloured patch in
+    alternating colours to distinguish reps.)
+
+    Parameters
+    ----------
+    fig : Figure
+        Plotly figure for rep boxes to be added
+    dataframe : DataFrame
+        bar path data
+    key : str
+        metric for plot to determine box min and max height.
+
+    Returns
+    -------
+    Figure
+        Updated plot with added rep boxes annotated
+    """
     top = np.max(dataframe[key])
     bottom = np.min(dataframe[key])
 
@@ -35,33 +53,69 @@ def add_rep_boxes(fig, dataframe, key):
     return fig
 
 
-def return_speed_plot(dataframe):
+def return_speed_plot(dataframe: DataFrame) -> Figure:
+    """Plot speed from bar path data
+
+    Parameters
+    ----------
+    dataframe : DataFrame
+        Bar path data
+
+    Returns
+    -------
+    Figure
+        plotly line plot of speed against times
+    """
     fig = px.line(dataframe, x="time", y="speed")
     fig = add_rep_boxes(fig, dataframe, key="speed")
     fig["data"][0]["line"]["color"] = "#00ff00"
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(30, 30, 30)",
-            "plot_bgcolor": "rgb(30, 30, 30)",
+            "paper_bgcolor": "rgb(0, 0, 0)",
+            "plot_bgcolor": "rgb(0, 0, 0)",
         }
     )
     return fig
 
 
-def return_distance_plot(dataframe):
+def return_distance_plot(dataframe: DataFrame) -> Figure:
+    """Plot distance from bar path data
+
+    Parameters
+    ----------
+    dataframe : DataFrame
+        Bar path data
+
+    Returns
+    -------
+    Figure
+        Plotly line plot of distance against times
+    """
     fig = px.line(dataframe, x="time", y="y_distance")
     fig = add_rep_boxes(fig, dataframe, key="y_distance")
     fig["data"][0]["line"]["color"] = "#00ff00"
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(30, 30, 30)",
-            "plot_bgcolor": "rgb(30, 30, 30)",
+            "paper_bgcolor": "rgb(0, 0, 0)",
+            "plot_bgcolor": "rgb(0, 0, 0)",
         }
     )
     return fig
 
 
-def return_bar_plot(dataframe):
+def return_bar_plot(dataframe: DataFrame) -> Figure:
+    """Return bar plot of max speeds for each rep.
+
+    Parameters
+    ----------
+    dataframe : DataFrame
+        Dataframe of bar path stats
+
+    Returns
+    -------
+    Figure
+        Bar plot of max speeds against time.
+    """
     reps = set(list(dataframe["rep"]))
 
     rep_max_speeds = []
@@ -79,21 +133,33 @@ def return_bar_plot(dataframe):
     fig.update_traces(marker_color="#059669")
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(30, 30, 30)",
-            "plot_bgcolor": "rgb(30, 30, 30)",
+            "paper_bgcolor": "rgb(0, 0, 0)",
+            "plot_bgcolor": "rgb(0, 0, 0)",
         }
     )
     return fig
 
 
-def return_acceleration_plot(dataframe):
+def return_acceleration_plot(dataframe: DataFrame) -> Figure:
+    """Plot acceleration from bar path data
+
+    Parameters
+    ----------
+    dataframe : DataFrame
+        Bar path data
+
+    Returns
+    -------
+    Figure
+        Plotly line plot of acceleration against times
+    """
     fig = px.line(dataframe, x="time", y="acceleration")
     fig = add_rep_boxes(fig, dataframe, key="acceleration")
     fig["data"][0]["line"]["color"] = "#00ff00"
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(30, 30, 30)",
-            "plot_bgcolor": "rgb(30, 30, 30)",
+            "paper_bgcolor": "rgb(0, 0, 0)",
+            "plot_bgcolor": "rgb(0, 0, 0)",
         }
     )
     return fig
