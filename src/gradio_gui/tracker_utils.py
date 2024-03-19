@@ -42,6 +42,7 @@ def track_bar_path(
         - update acceleration plot
         - update distance plot
     """
+    meters_per_pixel = {}
 
     # Set up object tracker:
     tracker = ObjectTracker()
@@ -59,7 +60,8 @@ def track_bar_path(
     starting_bbox = [top_left[0], top_left[1], width, height]
 
     # approximate meters per pixel
-    meters_per_pixel = 0.45 / height  # gross approximation for now.
+    meters_per_pixel["y"] = 0.45 / height
+    meters_per_pixel["x"] = 0.45 / width
 
     # analyse video:
     bar_path, video = tracker.track_bar_path(
