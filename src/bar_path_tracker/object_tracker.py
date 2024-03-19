@@ -6,6 +6,7 @@ import cv2
 import scipy
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
+from typing import Tuple
 
 
 class ObjectTracker:
@@ -17,35 +18,12 @@ class ObjectTracker:
         self.frame_height = 1000
         self.frame_width = 1000
 
-    def open_and_display_video(self, video_path: str) -> None:
-        """Open Video
-        _
-        """
-        vid = cv2.VideoCapture(video_path)
-        if vid.isOpened() == False:
-            print("Error opening video stream or file")
-        else:
-            print(f"Playing video at {video_path}. Hit 'q' to quit.")
-
-        while vid.isOpened():
-            # Capture frame-by-frame
-            ret, frame = vid.read()
-
-            if ret == True:
-                cv2.imshow("Video", frame)
-                if cv2.waitKey(25) & 0xFF == ord("q"):
-                    break
-            else:
-                break
-        # When everything done, release the video capture object
-        vid.release()
-        # Closes all the frames
-        cv2.destroyAllWindows()
-
     def get_tracker(self):
         return self.tracker, self.tracker_type
 
-    def get_starting_bbox(self, video_path, plate_size):
+    def get_starting_bbox(
+        self, video_path: str, plate_size: float
+    ) -> Tuple[list[int], float, float]:
         cv2.destroyAllWindows()
         video = cv2.VideoCapture(video_path)
         ret, frame = video.read()
@@ -64,7 +42,7 @@ class ObjectTracker:
 
         return bbox, start_bbox_centre, meters_per_pixel
 
-    def smooth_line(self, values: list[float], window_length: int = 20):
+    def smooth_line(self, values: list[float], window_length: int = 10):
 
         smoothed_line = np.empty_like(values)
 
@@ -246,7 +224,9 @@ class ObjectTracker:
 
         x_distances = centres[:, 0]
         y_distances = centres[:, 1]
-        speeds = self.differentiate(y_distances, times, smooth_quanity=True)
+
+        distances = (x_distances**2 + y_distances**2) ** 0.5
+        speeds = self.differentiate(distances, times, smooth_quanity=True)
         accelerations = self.differentiate(speeds, times[1:], smooth_quanity=True)
 
         speeds = np.pad(
@@ -348,7 +328,7 @@ class ObjectTracker:
         reps = {}
 
         for i in range(len(turning_point_times)):
-            if i % 2 == 0 and i + 2 < len(turning_point_times):
+            if i % 2 != 0 and i + 2 < len(turning_point_times):
                 reps[int(i / 2) + 1] = {
                     "frame_inds": [turning_point_times[i], turning_point_times[i + 2]],
                     "times": [
