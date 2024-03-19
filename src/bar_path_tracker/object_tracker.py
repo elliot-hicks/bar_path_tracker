@@ -127,8 +127,8 @@ class ObjectTracker:
 
                 bar_path[round(time, 3)] = {
                     "centre_in_meters": [
-                        centre_x * meters_per_pixel,
-                        centre_y * meters_per_pixel,
+                        centre_x * meters_per_pixel["x"],
+                        centre_y * meters_per_pixel["y"],
                     ],
                     "centre_in_pixels": [centre_x, centre_y],
                     "bounding-box": list(bbox),
@@ -208,7 +208,7 @@ class ObjectTracker:
         self, quantity, time, smooth_quanity=False, smoothing_poly_order=5
     ):
         if smooth_quanity:
-            quantity = savgol_filter(quantity, 51, smoothing_poly_order)
+            quantity = savgol_filter(quantity, 31, smoothing_poly_order)
 
         d_quantity = quantity[1:] - quantity[:-1]
         d_time = time[1:] - time[:-1]
