@@ -164,4 +164,4 @@ with gr.Blocks(theme=custom_theme) as demo:
     )
 
 
-demo.queue().launch(share=False)
+demo.queue().launch(share=True)
