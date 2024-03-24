@@ -124,7 +124,7 @@ A big thank you to my old coach and close friend Josh Pearson from Forged Powerl
 <br />
 <div align="center">
   <a href="https://github.com/elliot-hicks/bar_path_tracker">
-    <img src="https://github.com/elliot-hicks/bar_path_tracker/blob/main/images/team_forged.jpg" alt="Team Forged" width="300" height="300">
+    <img src="https://github.com/elliot-hicks/bar_path_tracker/blob/main/images/team_forged.jpg" alt="Team Forged" width="600" height="300">
   </a>
 
 
