@@ -64,10 +64,9 @@ As a passionate powerlifter, I’ve always been fascinated by the intricate danc
 
 ### Built With
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 Python, OpenCV, Gradio, caffeine. 
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -110,11 +109,11 @@ Don't forget to give the project a star! Thanks again!
 <!-- CONTACT -->
 ## Contact
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 Please create an issue if you wish to get in touch!
 
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
