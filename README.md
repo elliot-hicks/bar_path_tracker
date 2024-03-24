@@ -16,15 +16,15 @@
     <img src="https://github.com/elliot-hicks/bar_path_tracker/blob/main/images/bar_path_logo.svg" alt="Logo" width="300" height="300">
   </a>
 
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">BarPath</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    A repo for powerlifting analytics
     <br />
     <a href="https://github.com/elliot-hicks/bar_path_tracker"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/elliot-hicks/bar_path_tracker">View Demo</a>
+    <a href="https://github.com/elliot-hicks/bar_path_tracker/main.py">View Demo</a>
     ·
     <a href="https://github.com/elliot-hicks/bar_path_tracker/issues">Report Bug</a>
     ·
@@ -63,7 +63,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+As a passionate powerlifter, I’ve always been fascinated by the intricate dance between strength, technique, and performance. Recently, I combined my love for powerlifting with my analytical skills to create something truly exciting: a bar path tracking app using OpenCV, Python, and Gradio.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -71,42 +71,30 @@
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+Python, OpenCV, Gradio, caffeine. 
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-### Prerequisites
+Install requirements in `requirements.txt` using:
 
-### Installation
+``` conda create --name <your_env> --file requirements.txt```
 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+Run main.py and upload your own lifting video, or an example in `src/data/example_videos`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Indent 1
-    - [ ] Indent 2
-
-See the [open issues](https://github.com/elliot-hicks/bar_path_tracker/issues) for a full list of proposed features (and known issues).
+- [ ] Link user form and stats
+- [ ] Multi set tracking
+    - [ ] 1RM estimation
+- [ ] Pose Estimation
+- [ ] Custom plate sizing
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -124,26 +112,26 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the <LICENSE> License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 <!-- CONTACT -->
 ## Contact
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+Please create an issue if you wish to get in touch!
 
 
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
+A big thank you to my old coach and close friend Josh Pearson from Forged Powerlifting for providing his training videos and velocity data for BarPath's development. Check out his website at https://www.forgedpowerlifting.com/ for any powerlifting needs!
+
+<br />
+<div align="center">
+  <a href="https://github.com/elliot-hicks/bar_path_tracker">
+    <img src="https://github.com/elliot-hicks/bar_path_tracker/blob/main/images/team_forged.jpg" alt="Logo" width="300" height="300">
+  </a>
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
