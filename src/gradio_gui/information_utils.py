@@ -57,4 +57,5 @@ def submit_info():
         gr.update(visible=True),
         gr.update(visible=True),
         gr.update(visible=True),
+        gr.update(visible=True),
     )

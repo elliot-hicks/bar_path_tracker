@@ -6,6 +6,7 @@ import cv2
 import scipy
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
+from typing import Tuple, Union, Any
 
 
 class ObjectTracker:
@@ -17,35 +18,33 @@ class ObjectTracker:
         self.frame_height = 1000
         self.frame_width = 1000
 
-    def open_and_display_video(self, video_path: str) -> None:
-        """Open Video
-        _
+    def get_tracker(self) -> Tuple[None, str]:
+        """Return tracker (self) and tracker type
+
+        Returns
+        -------
+        Tuple[None, str]
+            self, tracker type string
         """
-        vid = cv2.VideoCapture(video_path)
-        if vid.isOpened() == False:
-            print("Error opening video stream or file")
-        else:
-            print(f"Playing video at {video_path}. Hit 'q' to quit.")
-
-        while vid.isOpened():
-            # Capture frame-by-frame
-            ret, frame = vid.read()
-
-            if ret == True:
-                cv2.imshow("Video", frame)
-                if cv2.waitKey(25) & 0xFF == ord("q"):
-                    break
-            else:
-                break
-        # When everything done, release the video capture object
-        vid.release()
-        # Closes all the frames
-        cv2.destroyAllWindows()
-
-    def get_tracker(self):
         return self.tracker, self.tracker_type
 
-    def get_starting_bbox(self, video_path, plate_size):
+    def get_starting_bbox(
+        self, video_path: str, plate_size: float
+    ) -> Tuple[list[int], tuple[int, int], float]:
+        """Draw a starting bounding box around the weight using OpenCV
+
+        Parameters
+        ----------
+        video_path : str
+            Path to video for analysis
+        plate_size : float
+            Plate size in metres
+
+        Returns
+        -------
+        Tuple[list[int], float, float]
+            _description_
+        """
         cv2.destroyAllWindows()
         video = cv2.VideoCapture(video_path)
         ret, frame = video.read()
@@ -56,15 +55,34 @@ class ObjectTracker:
         frame = cv2.resize(frame, [self.frame_width // 2, self.frame_height // 2])
 
         # Select the bounding box in the first frame
-        bbox = cv2.selectROI(frame, False)
+        bbox: list[int] = cv2.selectROI(frame, False)
         cv2.destroyAllWindows()
-        start_bbox_centre = (int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2))
+        start_bbox_centre: Tuple[int, int] = (
+            int(bbox[0] + bbox[2] / 2),
+            int(bbox[1] + bbox[3] / 2),
+        )
 
-        meters_per_pixel = plate_size / max([bbox[2], bbox[3]])
+        meters_per_pixel: float = plate_size / max([bbox[2], bbox[3]])
 
         return bbox, start_bbox_centre, meters_per_pixel
 
-    def smooth_line(self, values: list[float], window_length: int = 20):
+    def smooth_line(
+        self, values: list[Union[float, int]], window_length: int = 10
+    ) -> np.ndarray:
+        """Smooth a line using a sliding average.
+
+        Parameters
+        ----------
+        values : list[float]
+            Line for smoothing
+        window_length : int, optional
+            Horizon of sliding window, by default 10
+
+        Returns
+        -------
+        np.ndarray
+            Smoothed line
+        """
 
         smoothed_line = np.empty_like(values)
 
@@ -86,11 +104,8 @@ class ObjectTracker:
         starting_bbox_centre,
         meters_per_pixel,
         verbose=False,
-    ):
+    ) -> Tuple[dict[str, float], str]:
         line_colour = (5, 150, 105)
-
-        frame_height = 1000
-        frame_width = 1000
         bar_path = {}
         previous_centre = starting_bbox_centre
 
@@ -100,7 +115,7 @@ class ObjectTracker:
         # load video:
         cv2.destroyAllWindows()
         video = cv2.VideoCapture(video_path)
-        time = video.get(cv2.CAP_PROP_FPS) / 1000
+        time: float = video.get(cv2.CAP_PROP_FPS) / 1000
         ret, frame = video.read()
 
         frame_width, frame_height = frame.shape[1], frame.shape[0]
@@ -132,15 +147,10 @@ class ObjectTracker:
             fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
 
             if ret:
-                top_left = (int(bbox[0]), int(bbox[1]))  # top left
-                bottom_right = (
-                    int(bbox[0] + bbox[2]),
-                    int(bbox[1] + bbox[3]),
-                )  # bottom right
+
                 centre = [int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2)]
                 mask = cv2.line(mask, previous_centre, centre, line_colour, 2)
-                # frame = cv2.rectangle(frame, top_left, bottom_right, box_colour, 2, 1)
-                # frame = cv2.circle(frame, centre, 5, box_colour)
+
                 centre_x = centre[0] - starting_bbox_centre[0]
                 centre_y = starting_bbox_centre[1] - centre[1]
 
@@ -149,8 +159,8 @@ class ObjectTracker:
 
                 bar_path[round(time, 3)] = {
                     "centre_in_meters": [
-                        centre_x * meters_per_pixel,
-                        centre_y * meters_per_pixel,
+                        centre_x * meters_per_pixel["x"],
+                        centre_y * meters_per_pixel["y"],
                     ],
                     "centre_in_pixels": [centre_x, centre_y],
                     "bounding-box": list(bbox),
@@ -227,10 +237,34 @@ class ObjectTracker:
         return bar_path, output_path
 
     def differentiate(
-        self, quantity, time, smooth_quanity=False, smoothing_poly_order=5
-    ):
+        self,
+        quantity: list[Union[float, int]],
+        time: list[float],
+        smooth_quanity: bool = False,
+        smoothing_poly_order: int = 5,
+    ) -> np.ndaray:
+        """Differentiate a list, optionally smoothing it first with sliding
+        average.
+
+        Parameters
+        ----------
+        quantity : list[Union[float, int]]
+            Quantity for differentiating w.r.t. time
+        time : list[float]
+            Time for derrivation
+        smooth_quanity : bool, optional
+            Smooth the quantity before differentating, by default False
+        smoothing_poly_order : int, optional
+            Polynomial complexity for savgol filter, by default 5
+
+        Returns
+        -------
+        np.ndaray
+            The time differential of `quantity`
+        """
+
         if smooth_quanity:
-            quantity = savgol_filter(quantity, 51, smoothing_poly_order)
+            quantity = savgol_filter(quantity, 31, smoothing_poly_order)
 
         d_quantity = quantity[1:] - quantity[:-1]
         d_time = time[1:] - time[:-1]
@@ -240,13 +274,42 @@ class ObjectTracker:
 
         return d_quantity / d_time
 
-    def get_stats(self, bar_path, weight, verbose=False):
+    def get_stats(
+        self,
+        bar_path: dict[float, dict[str, float]],
+        weight: float,
+        verbose: bool = False,
+    ) -> dict[float, dict[str, float]]:
+        """Collect kinematics for set into a dictionary indexed by time.
+
+        Parameters
+        ----------
+        bar_path : dict[float, dict[str, float]]
+            Tracked bar path with time index
+        weight : float
+            Weight used for set
+        verbose : bool, optional
+            To plot stats or not, by default False
+
+        Returns
+        -------
+        dict[float, dict[str, float]]
+            Stats with format:
+            stats[time] = {
+                "x_distance": x_distances[i],
+                "y_distance": y_distances[i],
+                "speeds": speeds[i],
+                "accelerations": accelerations[i],
+            }
+        """
         times = np.array(list(bar_path.keys()))
         centres = np.array([entry["centre_in_meters"] for entry in bar_path.values()])
 
         x_distances = centres[:, 0]
         y_distances = centres[:, 1]
-        speeds = self.differentiate(y_distances, times, smooth_quanity=True)
+
+        distances = (x_distances**2 + y_distances**2) ** 0.5
+        speeds = self.differentiate(distances, times, smooth_quanity=True)
         accelerations = self.differentiate(speeds, times[1:], smooth_quanity=True)
 
         speeds = np.pad(
@@ -292,7 +355,33 @@ class ObjectTracker:
 
         return stats
 
-    def get_turning_points(self, times, displacements, verbose=False):
+    def get_turning_points(
+        self, times, displacements, verbose=False
+    ) -> dict[int, float]:
+        """Find the turning points of a rep using the vertical displacements. Does:
+        1. Normalizes displacements
+        2. Smooths with Savgol Filter
+        3. Counts peaks and troughs using scipy
+        4. Finds heights of each turning point
+        5. Finds extreme heights and corresponding times
+
+
+
+        Parameters
+        ----------
+        times : list[float]
+            List of times in set
+        displacements : list[float]
+            List of vertical displacements in set
+        verbose : bool, optional
+            Plot, by default False
+
+        Returns
+        -------
+        dict[int, float]
+            Dict of time indexes and heights corresponding to turning points
+        """
+
         norm_v_displacements = (displacements - displacements.min()) / (
             displacements.max() - displacements.min()
         )
@@ -303,7 +392,6 @@ class ObjectTracker:
 
         num_peaks = len(peaks[0])
         num_troughs = len(troughs[0])
-        # num_reps = max(num_peaks, num_troughs)
 
         heights = np.array([])
         heights = np.append(heights, -1 * troughs[1]["peak_heights"])
@@ -344,11 +432,27 @@ class ObjectTracker:
 
         return turning_points
 
-    def get_reps(self, turning_point_times, times):
+    def get_reps(
+        self, turning_point_times: list[int], times: dict[int, float]
+    ) -> dict[int, dict[str, list[Union[float, int]]]]:
+        """Assign rep numbers to times in a set
+
+        Parameters
+        ----------
+        turning_point_times : list[int]
+            Time indices fot turning points
+        times : dict[int,float]
+            Time values for set
+
+        Returns
+        -------
+        dict[int, dict[str, list[Union[float, int]]]]
+            A dict showing the rep number for every frame index and time value
+        """
         reps = {}
 
         for i in range(len(turning_point_times)):
-            if i % 2 == 0 and i + 2 < len(turning_point_times):
+            if i % 2 != 0 and i + 2 < len(turning_point_times):
                 reps[int(i / 2) + 1] = {
                     "frame_inds": [turning_point_times[i], turning_point_times[i + 2]],
                     "times": [
@@ -362,7 +466,26 @@ class ObjectTracker:
 
         return reps
 
-    def plot_reps(self, x_displacements, y_displacements, turning_points, speeds):
+    def plot_reps(
+        self,
+        x_displacements: np.ndarray,
+        y_displacements: np.ndarray,
+        turning_points: dict[int, float],
+        speeds: np.ndarray,
+    ) -> None:
+        """Plot the reps
+
+        Parameters
+        ----------
+        x_displacements : np.ndarray
+            horizontal distance
+        y_displacements : np.ndarray
+            vertical distance
+        turning_points : dict[int, float]
+            Turning points dictt[time index, time value]
+        speeds : np.ndarray
+            speed
+        """
         f, axs = plt.subplots(1, len(turning_points) - 1, figsize=(12, 4))
         extreme_times = list(turning_points.keys())
 
@@ -383,8 +506,24 @@ class ObjectTracker:
             )
             axs[i].set_title(title)
 
-    def get_set_summary(self, bar_path, weight):
-        stats = self.get_stats(bar_path, weight, True)
+    def get_set_summary(
+        self, bar_path: dict[float, dict[str, float]], weight: float
+    ) -> Tuple[dict[float, dict[str, float]], dict[int, dict[str, list[float | int]]]]:
+        """Get all stats from tracker
+
+        Parameters
+        ----------
+        bar_path : dict[float, dict[str, float]]
+            Bar path tracking using time: {measurement; value}
+        weight : float
+            Weight for force calculation
+
+        Returns
+        -------
+        Tuple[dict[float, dict[str, float]], dict[int, dict[str, list[float | int]]]]
+            Stats from `get_stats` and reps from `get_reps`
+        """
+        stats: dict[float, dict[str, float]] = self.get_stats(bar_path, weight, True)
         times = np.array(list(stats.keys()))
 
         y_displacements = np.array([entry["y_distance"] for entry in stats.values()])

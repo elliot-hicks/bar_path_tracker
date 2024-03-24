@@ -6,9 +6,10 @@ import numpy as np
 import pandas as pd
 
 from gradio_gui.plot_utils import (
-    return_bar_plot,
     return_distance_plot,
     return_speed_plot,
+    return_max_acceleration_bar_plot,
+    return_max_speed_bar_plot,
 )
 
 colors = [(5, 150, 105), (5, 150, 105)]
@@ -41,6 +42,7 @@ def track_bar_path(
         - update acceleration plot
         - update distance plot
     """
+    meters_per_pixel = {}
 
     # Set up object tracker:
     tracker = ObjectTracker()
@@ -58,7 +60,8 @@ def track_bar_path(
     starting_bbox = [top_left[0], top_left[1], width, height]
 
     # approximate meters per pixel
-    meters_per_pixel = 0.45 / height  # gross approximation for now.
+    meters_per_pixel["y"] = 0.45 / height
+    meters_per_pixel["x"] = 0.45 / width
 
     # analyse video:
     bar_path, video = tracker.track_bar_path(
@@ -76,14 +79,16 @@ def track_bar_path(
     # reps:  {1: {'frame_inds': [0, 150], 'times': [0.033, 5.037]}
     data_frame = stats_to_pd_dataframe(stats, reps)
     speed_plot = return_speed_plot(data_frame)
-    acceleration_plot = return_bar_plot(data_frame)
+    max_speed_plot = return_max_speed_bar_plot(data_frame)
+    max_acceleration_plot = return_max_acceleration_bar_plot(data_frame)
     distance_plot = return_distance_plot(data_frame)
 
     return (
         gr.update(visible=False),
         gr.update(value=video),
         gr.update(value=speed_plot),
-        gr.update(value=acceleration_plot),
+        gr.update(value=max_speed_plot),
+        gr.update(value=max_acceleration_plot),
         gr.update(value=distance_plot),
     )
 

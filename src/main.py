@@ -82,8 +82,10 @@ with gr.Blocks(theme=custom_theme) as demo:
                 distance_plot = gr.Plot(visible=False)
             with gr.Tab("Speed"):
                 speed_plot = gr.Plot(visible=False)
-            with gr.Tab("Acceleration"):
-                acceleration_plot = gr.Plot(visible=False)
+            with gr.Tab("Max Speed"):
+                max_speed_plot = gr.Plot(visible=False)
+            with gr.Tab("Max Acceleration"):
+                max_acceleration_plot = gr.Plot(visible=False)
 
     # When video is uploaded:
     # return the video, first frame/ thumbnail,
@@ -138,7 +140,8 @@ with gr.Blocks(theme=custom_theme) as demo:
             bounding_box_screen,  # update value
             bar_path_video,  # update value
             speed_plot,  # update value
-            acceleration_plot,  # update value
+            max_speed_plot,  # update value
+            max_acceleration_plot,  # update value
             distance_plot,  # update value
         ],
     )
@@ -154,10 +157,11 @@ with gr.Blocks(theme=custom_theme) as demo:
             exercise_box,  # hide
             bar_path_video,  # show
             speed_plot,  # show
-            acceleration_plot,  # show
+            max_speed_plot,  # show
+            max_acceleration_plot,  # show
             distance_plot,  # show
         ],
     )
 
 
-demo.queue().launch(share=False)
+demo.queue().launch(share=True)

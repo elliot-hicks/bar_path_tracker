@@ -36,7 +36,7 @@ def add_rep_boxes(fig: Figure, dataframe: DataFrame, key: str) -> Figure:
         rep_end = np.max(rep_times) - (np.max(dataframe["time"]) / 100)
 
         if counter % 2 == 0:
-            colour = "green"
+            colour = "white"
         else:
             colour = "gray"
 
@@ -47,9 +47,10 @@ def add_rep_boxes(fig: Figure, dataframe: DataFrame, key: str) -> Figure:
             y0=bottom,
             y1=top,
             fillcolor=colour,
-            opacity=0.2,
+            opacity=0.1,
         )
-
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
     return fig
 
 
@@ -66,15 +67,25 @@ def return_speed_plot(dataframe: DataFrame) -> Figure:
     Figure
         plotly line plot of speed against times
     """
-    fig = px.line(dataframe, x="time", y="speed")
+    fig = px.line(
+        dataframe,
+        x="time",
+        y="speed",
+        labels={"time": "Time (s)", "speed": "Vertical Speed (M/s)"},
+    )
     fig = add_rep_boxes(fig, dataframe, key="speed")
-    fig["data"][0]["line"]["color"] = "#00ff00"
+    fig["data"][0]["line"]["color"] = "#047857"
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(0, 0, 0)",
-            "plot_bgcolor": "rgb(0, 0, 0)",
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
+            "font_color": "#047857",
+            "font_size": 20,
         }
     )
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
+    fig["data"][0]["line"]["width"] = 3
     return fig
 
 
@@ -91,19 +102,33 @@ def return_distance_plot(dataframe: DataFrame) -> Figure:
     Figure
         Plotly line plot of distance against times
     """
-    fig = px.line(dataframe, x="time", y="y_distance")
+    fig = px.line(
+        dataframe,
+        x="time",
+        y="y_distance",
+        labels={
+            "y_distance": "Height (M)",
+            "time": "Time(s)",
+        },
+    )
     fig = add_rep_boxes(fig, dataframe, key="y_distance")
-    fig["data"][0]["line"]["color"] = "#00ff00"
+    fig["data"][0]["line"]["color"] = "#047857"
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(0, 0, 0)",
-            "plot_bgcolor": "rgb(0, 0, 0)",
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
+            "font_color": "#047857",
+            "font_size": 20,
         }
     )
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
+    fig["data"][0]["line"]["width"] = 3
+
     return fig
 
 
-def return_bar_plot(dataframe: DataFrame) -> Figure:
+def return_max_speed_bar_plot(dataframe: DataFrame) -> Figure:
     """Return bar plot of max speeds for each rep.
 
     Parameters
@@ -129,14 +154,67 @@ def return_bar_plot(dataframe: DataFrame) -> Figure:
         plot_reps.append(rep)
         rep_max_speeds.append(rep_max_speed)
 
-    fig = px.bar(x=plot_reps, y=rep_max_speeds)
+    fig = px.bar(
+        x=plot_reps,
+        y=rep_max_speeds,
+        labels={"x": "Rep", "y": "Maximum Vertical Speed M/s"},
+    )
     fig.update_traces(marker_color="#059669")
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(0, 0, 0)",
-            "plot_bgcolor": "rgb(0, 0, 0)",
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
+            "font_color": "#047857",
+            "font_size": 18,
         }
     )
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
+    return fig
+
+
+def return_max_acceleration_bar_plot(dataframe: DataFrame) -> Figure:
+    """Return bar plot of max accelerations for each rep.
+
+    Parameters
+    ----------
+    dataframe : DataFrame
+        Dataframe of bar path stats
+
+    Returns
+    -------
+    Figure
+        Bar plot of max speeds against time.
+    """
+    reps = set(list(dataframe["rep"]))
+
+    rep_max_accelerations = []
+    plot_reps = []
+
+    for rep in reps:
+        if rep == 0:
+            continue
+
+        rep_max_accel = np.max(dataframe["acceleration"][dataframe["rep"] == rep])
+        plot_reps.append(rep)
+        rep_max_accelerations.append(rep_max_accel)
+
+    fig = px.bar(
+        x=plot_reps,
+        y=rep_max_accelerations,
+        labels={"x": "Rep", "y": "Maximum Vertical Acceleration M/s^2"},
+    )
+    fig.update_traces(marker_color="#059669")
+    fig.update_layout(
+        {
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
+            "font_color": "#047857",
+            "font_size": 18,
+        }
+    )
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
     return fig
 
 
@@ -153,13 +231,27 @@ def return_acceleration_plot(dataframe: DataFrame) -> Figure:
     Figure
         Plotly line plot of acceleration against times
     """
-    fig = px.line(dataframe, x="time", y="acceleration")
+    fig = px.line(
+        dataframe,
+        x="time",
+        y="acceleration",
+        labels={
+            "acceleration": "Vertical Acceleration (M/s^2)",
+            "time": "Time(s)",
+        },
+    )
     fig = add_rep_boxes(fig, dataframe, key="acceleration")
-    fig["data"][0]["line"]["color"] = "#00ff00"
+    fig["data"][0]["line"]["color"] = "#047857"
+    fig["data"][0]["line"]["width"] = 3
+
     fig.update_layout(
         {
-            "paper_bgcolor": "rgb(0, 0, 0)",
-            "plot_bgcolor": "rgb(0, 0, 0)",
+            "paper_bgcolor": "rgb(30, 30, 30)",
+            "plot_bgcolor": "rgb(30, 30, 30)",
+            "font_color": "#047857",
+            "font_size": 20,
         }
     )
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
     return fig
